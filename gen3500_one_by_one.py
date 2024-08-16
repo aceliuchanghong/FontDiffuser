@@ -214,7 +214,7 @@ def process_directory(args, pipe):
 
 if __name__ == "__main__":
     """
-    python gen3500.py \
+    python gen3500_one_by_one.py \
     --ckpt_dir="ckpt/" \
     --content_image_dir="data_examples/basic/LXGWWenKaiGB-Light/" \
     --style_image_path="data_examples/sampling/依.png" \
@@ -227,7 +227,7 @@ if __name__ == "__main__":
     --num_inference_steps=20 \
     --method="multistep"
     
-    python gen3500.py \
+    python gen3500_one_by_one.py \
     --ckpt_dir="ckpt/" \
     --content_image_dir="data_examples/basic/LXGWWenKaiGB-Light/" \
     --style_image_path="data_examples/sampling/炬.png" \
@@ -240,7 +240,7 @@ if __name__ == "__main__":
     --num_inference_steps=20 \
     --method="multistep"
     
-    python gen3500.py \
+    python gen3500_one_by_one.py \
     --ckpt_dir="ckpt/" \
     --content_image_dir="data_examples/basic/LXGWWenKaiGB-Light/" \
     --style_image_path="data_examples/sampling/暗.png" \
