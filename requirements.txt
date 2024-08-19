@@ -7,3 +7,4 @@ pygame
 opencv-python
 info-nce-pytorch
 kornia
+picosvg

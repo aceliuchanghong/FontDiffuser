@@ -172,7 +172,8 @@ def process_directory_batch(args, pipe):
         for image_name, out_image in zip(content_images, out_images):
             save_single_image(save_dir=args.save_image_dir, image=out_image,
                               name=image_name.replace(".png", "").replace(".jpg", ""))
-            print(f"Saved {args.save_image_dir}/{image_name}")
+            # print(f"Saved {args.save_image_dir}/{image_name}")
+        print(f"Saved in {args.save_image_dir}")
 
 
 if __name__ == "__main__":
@@ -200,6 +201,23 @@ if __name__ == "__main__":
     --guidance_scale=7.5 \
     --num_inference_steps=20 \
     --method="multistep"
+    
+    python batch_gen.py \
+    --ckpt_dir="ckpt/" \
+    --content_image_dir="data_examples/test_content_little/" \
+    --style_image_dir="data_examples/test_style/" \
+    --save_image_dir="outputs/" \
+    --device="cuda:0" \
+    --algorithm_type="dpmsolver++" \
+    --guidance_type="classifier-free" \
+    --guidance_scale=7.5 \
+    --num_inference_steps=20 \
+    --method="multistep"
+    
+    algorithm_type: "dpmsolver" or "dpmsolver++".
+    guidance_type: "uncond" or "classifier" or "classifier-free".
+    guidance_scale: The scale for the guided sampling.
+    method: 'singlestep' or 'multistep' or 'singlestep_fixed' or 'adaptive'.
     """
     args = arg_parse()
     pipe = load_fontdiffuer_pipeline(args=args)
