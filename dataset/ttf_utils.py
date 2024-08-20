@@ -75,7 +75,7 @@ def font2image(input_file, output_paths, characters, size):
         rtext = font.render(word, True, (0, 0, 0), (255, 255, 255))
 
         if word in AZ:  # for uppercase letter
-            word = word + '+'
+            word = word
         pygame.image.save(rtext, os.path.join(output_path, word + ".png"))
 
     remove_duplicated_images(output_path)
@@ -205,7 +205,7 @@ def check_image_exists(path, characters):
     AZ = [chr(i) for i in range(0x0041, 0x005A + 1)]
     for word in characters:
         if word in AZ:
-            word = word + '+'
+            word = word
         image = word + '.png'
         image_path = os.path.join(path, image)
         if not os.path.exists(image_path):
