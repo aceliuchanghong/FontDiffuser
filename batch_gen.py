@@ -177,42 +177,54 @@ def process_directory_batch(args, pipe):
 
 
 if __name__ == "__main__":
-    """
-    python batch_gen.py \
+    """   
+    nohup python batch_gen.py \
     --ckpt_dir="ckpt/" \
-    --content_image_dir="data_examples/test_content/" \
-    --style_image_dir="data_examples/test_style/" \
-    --save_image_dir="outputs/" \
+    --content_image_dir="data_examples/basic/微软雅黑粗体/" \
+    --style_image_dir="data_examples/test_style/cpp/" \
+    --save_image_dir="outputs/cpp/" \
+    --device="cuda:0" \
+    --algorithm_type="dpmsolver++" \
+    --guidance_type="classifier-free" \
+    --guidance_scale=7.5 \
+    --num_inference_steps=20 \
+    --method="multistep" &
+    
+    nohup python batch_gen.py \
+    --ckpt_dir="ckpt/" \
+    --content_image_dir="data_examples/basic/微软雅黑粗体/" \
+    --style_image_dir="data_examples/test_style/crh/" \
+    --save_image_dir="outputs/crh/" \
     --device="cuda:1" \
     --algorithm_type="dpmsolver++" \
     --guidance_type="classifier-free" \
     --guidance_scale=7.5 \
     --num_inference_steps=20 \
-    --method="multistep"
+    --method="multistep" &
     
-    python batch_gen.py \
+    nohup python batch_gen.py \
     --ckpt_dir="ckpt/" \
-    --content_image_dir="data_examples/basic/LXGWWenKaiGB-Light/" \
-    --style_image_dir="data_examples/test_style/" \
-    --save_image_dir="outputs/siyuan2" \
-    --device="cuda:0" \
+    --content_image_dir="data_examples/basic/微软雅黑粗体/" \
+    --style_image_dir="data_examples/test_style/fzfs/" \
+    --save_image_dir="outputs/fzfs/" \
+    --device="cuda:2" \
     --algorithm_type="dpmsolver++" \
     --guidance_type="classifier-free" \
     --guidance_scale=7.5 \
     --num_inference_steps=20 \
-    --method="multistep"
+    --method="multistep" &
     
-    python batch_gen.py \
+    nohup python batch_gen.py \
     --ckpt_dir="ckpt/" \
-    --content_image_dir="data_examples/test_content_little/" \
-    --style_image_dir="data_examples/test_style/" \
-    --save_image_dir="outputs/" \
-    --device="cuda:0" \
+    --content_image_dir="data_examples/basic/微软雅黑粗体/" \
+    --style_image_dir="data_examples/test_style/FZZCHJW/" \
+    --save_image_dir="outputs/FZZCHJW/" \
+    --device="cuda:3" \
     --algorithm_type="dpmsolver++" \
     --guidance_type="classifier-free" \
     --guidance_scale=7.5 \
     --num_inference_steps=20 \
-    --method="multistep"
+    --method="multistep" &
     
     algorithm_type: "dpmsolver" or "dpmsolver++".
     guidance_type: "uncond" or "classifier" or "classifier-free".

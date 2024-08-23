@@ -43,8 +43,8 @@ app = FastAPI()
 if __name__ == '__main__':
     """
     conda activate fontdiffuser
-    python easy_ui.py
-    nohup python easy_ui.py > s_words.log &
+    python font_easy_ui.py
+    nohup python font_easy_ui.py > s_words.log &
     """
     args = arg_parse()
     args.demo = True

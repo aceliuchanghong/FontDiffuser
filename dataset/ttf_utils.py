@@ -68,15 +68,18 @@ def font2image(input_file, output_paths, characters, size):
     if not os.path.exists(output_path):
         os.mkdir(output_path)
 
-    AZ = [chr(i) for i in range(0x0041, 0x005A + 1)]
-    file_sizes = []
     for word in characters:
         font = pygame.font.Font(input_file, size)
         rtext = font.render(word, True, (0, 0, 0), (255, 255, 255))
-
-        if word in AZ:  # for uppercase letter
-            word = word
-        pygame.image.save(rtext, os.path.join(output_path, word + ".png"))
+        try:
+            # if word == "填" or word == "天":
+            #     print("working on ", word, os.path.join(output_path, word + ".png"))
+            #     pygame.image.save(rtext, os.path.join(output_path, word + ".png"))
+            #     print(rtext)
+            pygame.image.save(rtext, os.path.join(output_path, word + ".png"))
+        except Exception as e:
+            print(e)
+            print("err:", word)
 
     remove_duplicated_images(output_path)
     process_image(output_path, size)
