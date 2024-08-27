@@ -1,4 +1,4 @@
-// Run: node testRegex.js whatever.txt
+// Run: node chunk.js whatever.txt
 // 引入了fs和util模块。fs模块用于文件系统操作，比如读取文件。util模块提供了工具函数
 const fs = require('fs');
 const util = require('util');
@@ -24,9 +24,9 @@ const MAX_SENTENCE_LENGTH = 400; //句子的最大长度
 const MAX_QUOTED_TEXT_LENGTH = 300;
 const MAX_PARENTHETICAL_CONTENT_LENGTH = 200;
 const MAX_NESTED_PARENTHESES = 5;
-const MAX_MATH_INLINE_LENGTH = 1000;
+const MAX_MATH_INLINE_LENGTH = 100;
 const MAX_MATH_BLOCK_LENGTH = 500;
-const MAX_PARAGRAPH_LENGTH = 100; //段落的最大长度
+const MAX_PARAGRAPH_LENGTH = 1000; //段落的最大长度
 const MAX_STANDALONE_LINE_LENGTH = 800;
 const MAX_HTML_TAG_ATTRIBUTES_LENGTH = 100;
 const MAX_HTML_TAG_CONTENT_LENGTH = 1000;
