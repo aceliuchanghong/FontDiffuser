@@ -106,6 +106,7 @@ def image_process(args, content_image=None, style_image=None):
         [transforms.Resize(args.style_image_size, interpolation=transforms.InterpolationMode.BILINEAR),
          transforms.ToTensor(),
          transforms.Normalize([0.5], [0.5])])
+    # [None, :] 的作用是对张量（tensor）进行扩展维度操作。从 [C, H, W] 变为 [1, C, H, W]
     content_image = content_inference_transforms(content_image)[None, :]
     style_image = style_inference_transforms(style_image)[None, :]
 

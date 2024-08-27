@@ -60,20 +60,20 @@ if __name__ == '__main__':
             with gr.Column(scale=1):
                 gr.HTML("""
                 <h2 style="text-align: left; font-weight: 600; font-size: 1rem; margin-top: 0.5rem; margin-bottom: 0.5rem">
-                    输入图片
+                    输入示例图片
                 </h2>
                 """)
                 gr.Image('figures/input.png')
                 gr.HTML("""<h2 style="text-align: left; font-weight: 600; font-size: 1rem; margin-top: 0.5rem; margin-bottom: 0.5rem">
-                                    输出字体</h2>
+                                    输出示例字体</h2>
                                 """)
                 gr.Image('figures/output.png')
 
             with gr.Column(scale=1):
                 with gr.Row():
-                    reference_image = gr.Image(width=320, label='上传风格文字', image_mode='RGB', type='pil',
+                    reference_image = gr.Image(width=320, label=' 1️⃣:上传风格文字', image_mode='RGB', type='pil',
                                                height=320)
-                    gr.Examples(label='点击选择风格字体',
+                    gr.Examples(label=' 1️⃣:点击选择风格字体',
                                 examples=[
                                     "data_examples/sampling/crh.png",
                                     "data_examples/train/ContentImage/氮.jpg",
@@ -87,7 +87,7 @@ if __name__ == '__main__':
                                 inputs=reference_image,
                                 )
                 with gr.Row():
-                    character = gr.Textbox(value='道', label='输入要生成的文字')
+                    character = gr.Textbox(value='道', label='2️⃣:输入要生成的文字')
                 with gr.Row():
                     fontdiffuer_output_image = gr.Image(height=200, label="输出字体", image_mode='RGB',
                                                         type='pil')
@@ -98,7 +98,7 @@ if __name__ == '__main__':
                                            label="分类器引导指数",
                                            info="默认7.5")
 
-                FontDiffuser = gr.Button('点击生成', variant='primary')
+                FontDiffuser = gr.Button('3️⃣:点击生成', variant='primary')
 
 
         def dummy_function(image):

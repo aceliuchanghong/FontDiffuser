@@ -31,7 +31,7 @@ def arg_parse():
     parser.add_argument("--style_image_dir", type=str, default=None, help="Directory containing style images.")
     parser.add_argument("--save_image_dir", type=str, default=None, help="The saving directory.")
     parser.add_argument("--device", type=str, default="cuda:2")
-    parser.add_argument("--ttf_path", type=str, default="ttf/KaiXinSongA.ttf")
+    parser.add_argument("--ttf_path", type=str, default="ttf/LXGWWenKaiGB-Light.ttf")
     args = parser.parse_args()
     style_image_size = args.style_image_size
     content_image_size = args.content_image_size

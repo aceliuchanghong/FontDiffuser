@@ -60,6 +60,10 @@ class FontDiffuserDPMPipeline():
         model_kwargs["version"] = self.version
         model_kwargs["content_encoder_downsample_size"] = content_encoder_downsample_size
 
+        """
+        cond 保存了条件输入（即内容图像和风格图像）。
+        uncond 保存了无条件输入，这里是与条件图像形状相同的全1张量
+        """
         cond = []
         cond.append(content_images)
         cond.append(style_images)
@@ -85,6 +89,7 @@ class FontDiffuserDPMPipeline():
         # 3. Define dpm-solver and sample by multistep DPM-Solver.
         # (We recommend multistep DPM-Solver for conditional sampling)
         # You can adjust the `steps` to balance the computation costs and the sample quality.
+        # DPM-Solver 是差分方程求解器，用于在噪声和模型预测之间进行求解，以生成图像
         dpm_solver = DPM_Solver(
             model_fn=model_fn,
             noise_schedule=self.noise_schedule,
@@ -93,7 +98,7 @@ class FontDiffuserDPMPipeline():
         )
         # If the DPM is defined on pixel-space images, you can further set `correcting_x0_fn="dynamic_thresholding"
 
-        # 4. Generate
+        # 4. Generate 生成初始噪声图像
         # Sample gaussian noise to begin loop => [batch, 3, height, width]
         x_T = torch.randn(
             (batch_size, 3, dm_size[0], dm_size[1]),
