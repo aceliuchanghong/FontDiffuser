@@ -111,6 +111,7 @@ def sampling_batch(args, pipe, content_images=None, style_images=None):
 
     if args.seed:
         set_seed(seed=args.seed)
+    old_content_images = content_images
 
     content_images, style_images = image_process_batch(args=args, content_images=content_images,
                                                        style_images=style_images)
@@ -151,6 +152,12 @@ def sampling_batch(args, pipe, content_images=None, style_images=None):
             )
             output_images.extend(images)
 
+            if images is not None:
+                for image_name, out_image in zip(old_content_images[i:i + batch_size], images):
+                    save_single_image(save_dir=args.save_image_dir, image=out_image,
+                                      name=image_name.replace(".png", "").replace(".jpg", ""))
+                    # print(f"Saved {args.save_image_dir}/{image_name}")
+
         end = time.time()
 
         print(f"Finished the sampling process, costing time {end - start}s")
@@ -163,24 +170,15 @@ def process_directory_batch(args, pipe):
                       f.endswith(('.png', '.jpg', '.jpeg'))]
     style_images = [f for f in os.listdir(args.style_image_dir) if
                     f.endswith(('.png', '.jpg', '.jpeg'))]
-    # print(content_images)
-    # print(style_images)
-    out_images = sampling_batch(args=args, pipe=pipe, content_images=content_images, style_images=style_images)
-    # print("out_images:", out_images)
 
-    if out_images is not None:
-        for image_name, out_image in zip(content_images, out_images):
-            save_single_image(save_dir=args.save_image_dir, image=out_image,
-                              name=image_name.replace(".png", "").replace(".jpg", ""))
-            # print(f"Saved {args.save_image_dir}/{image_name}")
-        print(f"Saved in {args.save_image_dir}")
+    sampling_batch(args=args, pipe=pipe, content_images=content_images, style_images=style_images)
 
 
 if __name__ == "__main__":
     """   
     nohup python batch_gen.py \
     --ckpt_dir="ckpt/" \
-    --content_image_dir="data_examples/basic/微软雅黑粗体/" \
+    --content_image_dir="data_examples/basic/LXGWWenKaiGB-Light/" \
     --style_image_dir="data_examples/test_style/cpp/" \
     --save_image_dir="outputs/cpp/" \
     --device="cuda:0" \
@@ -192,7 +190,7 @@ if __name__ == "__main__":
     
     nohup python batch_gen.py \
     --ckpt_dir="ckpt/" \
-    --content_image_dir="data_examples/basic/微软雅黑粗体/" \
+    --content_image_dir="data_examples/basic/LXGWWenKaiGB-Light/" \
     --style_image_dir="data_examples/test_style/crh/" \
     --save_image_dir="outputs/crh/" \
     --device="cuda:1" \
@@ -204,7 +202,7 @@ if __name__ == "__main__":
     
     nohup python batch_gen.py \
     --ckpt_dir="ckpt/" \
-    --content_image_dir="data_examples/basic/微软雅黑粗体/" \
+    --content_image_dir="data_examples/basic/LXGWWenKaiGB-Light/" \
     --style_image_dir="data_examples/test_style/fzfs/" \
     --save_image_dir="outputs/fzfs/" \
     --device="cuda:2" \
@@ -216,7 +214,7 @@ if __name__ == "__main__":
     
     nohup python batch_gen.py \
     --ckpt_dir="ckpt/" \
-    --content_image_dir="data_examples/basic/微软雅黑粗体/" \
+    --content_image_dir="data_examples/basic/LXGWWenKaiGB-Light/" \
     --style_image_dir="data_examples/test_style/FZZCHJW/" \
     --save_image_dir="outputs/FZZCHJW/" \
     --device="cuda:3" \

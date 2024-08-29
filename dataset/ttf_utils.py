@@ -63,7 +63,7 @@ def font2image(input_file, output_paths, characters, size):
     input_file_name = input_file.split('/')[-1].split('.')[0]
     # print('mmL:', input_file_name)
     output_path = os.path.join(output_paths, input_file_name)
-    print(output_path)
+    # print(output_path)
 
     if not os.path.exists(output_path):
         os.mkdir(output_path)
@@ -72,10 +72,6 @@ def font2image(input_file, output_paths, characters, size):
         font = pygame.font.Font(input_file, size)
         rtext = font.render(word, True, (0, 0, 0), (255, 255, 255))
         try:
-            # if word == "填" or word == "天":
-            #     print("working on ", word, os.path.join(output_path, word + ".png"))
-            #     pygame.image.save(rtext, os.path.join(output_path, word + ".png"))
-            #     print(rtext)
             pygame.image.save(rtext, os.path.join(output_path, word + ".png"))
         except Exception as e:
             print(e)
