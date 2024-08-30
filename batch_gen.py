@@ -204,7 +204,7 @@ if __name__ == "__main__":
     --ckpt_dir="ckpt/" \
     --content_image_dir="data_examples/basic/LXGWWenKaiGB-Light/" \
     --style_image_dir="data_examples/test_style/fzfs/" \
-    --save_image_dir="outputs/fzfs/" \
+    --save_image_dir="outputs/fzfs2/" \
     --device="cuda:2" \
     --algorithm_type="dpmsolver++" \
     --guidance_type="classifier-free" \

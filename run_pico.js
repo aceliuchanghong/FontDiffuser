@@ -4,7 +4,7 @@ const util = require("util");
 const asyncPool = require("tiny-async-pool");
 const inputFolder = "./svg_separate";
 const outputFolder = "./pico";
-const concurrency = 20; // 同時執行的最大任務數，太高可能會導致 EBADF 錯誤
+const concurrency = 20; // 同时执行的最大任务数量 太高可能导致 EBADF 错误
 const execPromise = util.promisify(exec);
 async function asyncPoolAll(...args) {
   const results = [];

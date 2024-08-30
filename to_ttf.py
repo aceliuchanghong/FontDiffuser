@@ -1,5 +1,6 @@
 import fontforge, os, psMat
 
+
 def main():
     # 定义参数
     img_list = list()
@@ -25,8 +26,12 @@ def main():
     for img_path in img_list:
         # 获取unicode
         codestr = os.path.splitext(img_path)[0]
-        code = ord(codestr)
-
+        try:
+            code = ord(codestr)
+        except Exception as e:
+            print("err:", codestr)
+            print(e)
+            continue
         # 创建字符
         glyph = font.createChar(code, "uni" + codestr)
         glyph.importOutlines(os.path.join(img_dir, img_path))

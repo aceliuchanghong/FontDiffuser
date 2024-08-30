@@ -96,7 +96,7 @@ def main(opt):
 
 if __name__ == '__main__':
     """单独图片切割
-    python cut_pics.py --input 'input/三.png' --rect_size 25 --ignore_min_size 85 --ignore_max_size 100 --offset_param 1
+    python cut_pics_single.py --input 'input/三.png' --rect_size 25 --ignore_min_size 85 --ignore_max_size 100 --offset_param 1
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', dest='input_path', default='from/from4.jpg',

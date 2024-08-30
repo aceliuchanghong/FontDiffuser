@@ -3,10 +3,11 @@ const fs = require("fs");
 const path = require("path");
 const ProgressBar = require("progress");
 // const inputDir = path.join(__dirname, "crop_v5");
+// /mnt/data/llch/FontDiffuser/pic/cpp/ans
 const inputDir = path.join("D:\\aProject\\py\\FontDiffuser\\outputs\\cpp");
 const outputDir = path.join(__dirname, "svg_separate");
 
-// 讀取資料夾中的所有檔案
+// 读取文件夹所有文件
 fs.readdir(inputDir, function (err, files) {
   if (err) throw err;
 
@@ -22,7 +23,7 @@ fs.readdir(inputDir, function (err, files) {
     total: totalFiles,
   });
 
-  const startTime = Date.now(); // 記錄開始時間
+  const startTime = Date.now(); // 记录时间
 
   function processFile(index) {
     if (index < totalFiles) {
@@ -31,20 +32,19 @@ fs.readdir(inputDir, function (err, files) {
       const svgFileName = path.basename(file, ".png") + ".svg";
       const svgFilePath = path.join(outputDir, svgFileName);
 
-      // 使用 potrace 來轉換 PNG 到 SVG
+      // 使用 potrace 来转化 PNG 到 SVG
       potrace.trace(pngFilePath, function (err, svg) {
         if (err) throw err;
         fs.writeFileSync(svgFilePath, svg);
 
-        // 更新進度條
+        // 更新进度条
         progressBar.tick();
 
         // 继续处理下一个文件
         processFile(index + 1);
       });
     } else {
-      const endTime = Date.now(); // 記錄完成時間
-      const elapsedTime = (endTime - startTime) / 1000; // 計算耗時（秒）
+      const endTime = Date.now(); // 记录完成时间 / 1000; // 计算（秒）
       console.log("转换完成，共耗时:", elapsedTime.toFixed(2), "秒");
     }
   }

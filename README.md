@@ -12,8 +12,8 @@ apt-get install python3-fontforge
 node potrace.js # 修改地址
 node run_pico.js
 # 不同环境二选一 修改地址
-ffpython to_ttf.py  # windows
 /usr/bin/python3 to_ttf.py # linux
+ffpython to_ttf.py  # windows
 ```
 
 **Step 1**: Create a conda environment and activate it.
