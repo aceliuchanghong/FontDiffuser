@@ -77,8 +77,8 @@ def font2image(input_file, output_paths, characters, size):
             print(e)
             print("err:", word)
 
-    remove_duplicated_images(output_path)
-    process_image(output_path, size)
+    # remove_duplicated_images(output_path)
+    # process_image(output_path, size)
 
 
 def remove_duplicated_images(path):

@@ -2,12 +2,18 @@
 **Step last-end**: 
 ```bash
 npm install
+rm -rf svg_separate/
+rm -rf pico/
 mkdir svg_separate
+mkdir pico
+# linux安装
+apt-get install python3-fontforge
+
 node potrace.js # 修改地址
 node run_pico.js
-apt-get install python3-fontforge
-ffpython to_ttf.py # 二选一
-/usr/bin/python3 to_ttf.py # 修改地址
+# 不同环境二选一 修改地址
+ffpython to_ttf.py  # windows
+/usr/bin/python3 to_ttf.py # linux
 ```
 
 **Step 1**: Create a conda environment and activate it.

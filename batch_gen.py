@@ -180,7 +180,7 @@ if __name__ == "__main__":
     --ckpt_dir="ckpt/" \
     --content_image_dir="data_examples/basic/LXGWWenKaiGB-Light/" \
     --style_image_dir="data_examples/test_style/cpp/" \
-    --save_image_dir="outputs/cpp/" \
+    --save_image_dir="outputs/cpp2/" \
     --device="cuda:0" \
     --algorithm_type="dpmsolver++" \
     --guidance_type="classifier-free" \
@@ -192,7 +192,7 @@ if __name__ == "__main__":
     --ckpt_dir="ckpt/" \
     --content_image_dir="data_examples/basic/LXGWWenKaiGB-Light/" \
     --style_image_dir="data_examples/test_style/crh/" \
-    --save_image_dir="outputs/crh/" \
+    --save_image_dir="outputs/crh2/" \
     --device="cuda:1" \
     --algorithm_type="dpmsolver++" \
     --guidance_type="classifier-free" \
