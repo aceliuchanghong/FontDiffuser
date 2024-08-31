@@ -2,9 +2,8 @@ const potrace = require("potrace");
 const fs = require("fs");
 const path = require("path");
 const ProgressBar = require("progress");
-// const inputDir = path.join(__dirname, "crop_v5");
 // /mnt/data/llch/FontDiffuser/pic/cpp/ans
-const inputDir = path.join("D:\\aProject\\py\\FontDiffuser\\outputs\\cpp");
+const inputDir = path.join(process.argv[2])|| path.join("D:\\aProject\\py\\FontDiffuser\\outputs\\cpp");
 const outputDir = path.join(__dirname, "svg_separate");
 
 // 读取文件夹所有文件
@@ -44,7 +43,8 @@ fs.readdir(inputDir, function (err, files) {
         processFile(index + 1);
       });
     } else {
-      const endTime = Date.now(); // 记录完成时间 / 1000; // 计算（秒）
+      const endTime = Date.now(); // 记录完成时间
+      const elapsedTime = (endTime - startTime) / 1000; // 耗时（秒）
       console.log("转换完成，共耗时:", elapsedTime.toFixed(2), "秒");
     }
   }

@@ -1,4 +1,5 @@
 import fontforge, os, psMat
+import argparse
 
 
 def main():
@@ -47,9 +48,16 @@ def main():
 
 
 if __name__ == "__main__":
-    # img_dir = '/mnt/data/llch/FontDiffuser/pico'
-    # output = '/mnt/data/llch/FontDiffuser/cpp.ttf'
-    img_dir = r'D:\aProject\py\FontDiffuser\pico'  # 上一步png转换至svg存放的路径
-    output = r'D:\aProject\py\FontDiffuser\cpp.ttf'  # test.ttf
-    font_name = 'torch-cpp'
+    """
+    cd /mnt/data/llch/FontDiffuser
+    /usr/bin/python3 to_ttf.py --name cpp --v v1.0
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input', dest='img_dir', default='pico/', help='Please set the input path')
+    parser.add_argument('--name', dest='name', default='cpp', help='Please set the output path')
+    parser.add_argument('--v', dest='version', default='v1.0', help='Please set the output path')
+    opt = parser.parse_args()
+    img_dir = opt.img_dir
+    output = f'{opt.name}.ttf'
+    font_name = f'torch-{opt.name}-{opt.version}'
     main()

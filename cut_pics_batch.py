@@ -1,6 +1,5 @@
 import argparse
 import os
-import time
 import cv2
 import shutil
 import numpy as np
@@ -27,10 +26,12 @@ def process_image(img, rect_size, ignore_min_size, ignore_max_size, offset_param
         frame_size = max(font_w, font_h)
         x_offset = int((frame_size - font_w) / 2)
 
-        start_x = max(x + spacing - x_offset - offset_param, 0)
-        start_y = max(y + spacing - offset_param, 0)
-        end_x = min(x + w - spacing + x_offset + offset_param, img.shape[1])
-        end_y = min(y + h - spacing + offset_param, img.shape[0])
+        start_x = x + spacing - x_offset - offset_param
+        # start_y = y + spacing - y_offset - offset_param
+        start_y = 0
+        end_x = x + w - spacing + x_offset + offset_param
+        # end_y = y + h - spacing + y_offset + offset_param
+        end_y = h
 
         temp = img[start_y:end_y, start_x:end_x]
         path = os.path.join(output_path, "result")
@@ -96,6 +97,7 @@ def main(opt):
         if os.path.isfile(file_path):
             shutil.copy2(file_path, ans_path)
     # 再次将 result 路径中的文件复制到 ans_path，覆盖已有文件
+    print("图片切割数量:", str(len(os.listdir(os.path.join(output_path, "result")))))
     for file_name in os.listdir(os.path.join(output_path, "result")):
         file_path = os.path.join(os.path.join(output_path, "result"), file_name)
         if os.path.isfile(file_path):
@@ -108,14 +110,16 @@ if __name__ == '__main__':
     python cut_pics_batch.py --input 'input/test'
     python cut_pics_batch.py --input 'outputs/cpp2/' --output './pic/cpp'
     python cut_pics_batch.py --input 'outputs/crh2/' --output './pic/crh'
+    python cut_pics_batch.py --input 'outputs/fzfs2/' --output './pic/fzfs'
+    python cut_pics_batch.py --input 'outputs/FZZCHJW2/' --output './pic/FZZCHJW'
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', dest='input_path', default='input/', help='Please set the input path')
     parser.add_argument('--output', dest='output_path', default='./pic', help='Please set the output path')
-    parser.add_argument('--rect_size', dest='rect_size', default=25, type=int, help='膨胀腐蚀大小')
+    parser.add_argument('--rect_size', dest='rect_size', default=20, type=int, help='膨胀腐蚀大小')
     parser.add_argument('--ignore_min_size', dest='ignore_min_size', default=85, type=int, help='字体小于该值忽略')
     parser.add_argument('--ignore_max_size', dest='ignore_max_size', default=100, type=int, help='字体大于该值忽略')
-    parser.add_argument('--offset_param', dest='offset_param', default=1, type=int,
+    parser.add_argument('--offset_param', dest='offset_param', default=0, type=int,
                         help='图片选取偏移,选取图片扩大范围')
     opt = parser.parse_args()
     main(opt)

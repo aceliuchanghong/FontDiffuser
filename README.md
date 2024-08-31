@@ -9,10 +9,10 @@ mkdir pico
 # linux安装
 apt-get install python3-fontforge
 
-node potrace.js # 修改地址
+node potrace.js /mnt/data/llch/FontDiffuser/pic/cpp/ans
 node run_pico.js
 # 不同环境二选一 修改地址
-/usr/bin/python3 to_ttf.py # linux
+/usr/bin/python3 to_ttf.py --name cpp --v v1.0
 ffpython to_ttf.py  # windows
 ```
 

@@ -90,26 +90,29 @@ def main(opt):
         cv2.imwrite(path + str(token) + "_" + str(x) + "_" + str(y) + ".png", temp)
 
         token += 1
+        break
 
     cv2.imwrite(output_path + "result.jpg", thresh_rgb)
 
 
 if __name__ == '__main__':
     """单独图片切割
-    python cut_pics_single.py --input 'input/三.png' --rect_size 25 --ignore_min_size 85 --ignore_max_size 100 --offset_param 1
+    python cut_pics_single.py --input 'input/test/宕.png' --rect_size 15 --ignore_min_size 85 --ignore_max_size 100 --offset_param 1
+    python cut_pics_single.py --input 'input/test/册.png' --rect_size 15 --ignore_min_size 85 --ignore_max_size 100 --offset_param 1
+    python cut_pics_single.py --input 'input/test/了.png' --rect_size 15 --ignore_min_size 85 --ignore_max_size 100 --offset_param 1
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', dest='input_path', default='from/from4.jpg',
                         help='Please set the input path')
     parser.add_argument('--output', dest='output_path', default='./pic',
                         help='Please set the output path')
-    parser.add_argument('--rect_size', dest='rect_size', default=8, type=int,
+    parser.add_argument('--rect_size', dest='rect_size', default=15, type=int,
                         help='膨胀腐蚀大小')
     parser.add_argument('--ignore_min_size', dest='ignore_min_size', default=80, type=int,
                         help='字体小于该值忽略')
-    parser.add_argument('--ignore_max_size', dest='ignore_max_size', default=150, type=int,
+    parser.add_argument('--ignore_max_size', dest='ignore_max_size', default=100, type=int,
                         help='字体大于该值忽略')
-    parser.add_argument('--offset_param', dest='offset_param', default=48, type=int,
+    parser.add_argument('--offset_param', dest='offset_param', default=1, type=int,
                         help='图片选取偏移,选取图片扩大范围')
     opt = parser.parse_args()
     main(opt)
