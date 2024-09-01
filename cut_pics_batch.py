@@ -97,6 +97,8 @@ def main(opt):
         if os.path.isfile(file_path):
             shutil.copy2(file_path, ans_path)
     # 再次将 result 路径中的文件复制到 ans_path，覆盖已有文件
+    if not os.path.exists(os.path.join(output_path, "result")):
+        os.makedirs(os.path.join(output_path, "result"))
     print("图片切割数量:", str(len(os.listdir(os.path.join(output_path, "result")))))
     for file_name in os.listdir(os.path.join(output_path, "result")):
         file_path = os.path.join(os.path.join(output_path, "result"), file_name)
@@ -112,6 +114,9 @@ if __name__ == '__main__':
     python cut_pics_batch.py --input 'outputs/crh2/' --output './pic/crh'
     python cut_pics_batch.py --input 'outputs/fzfs2/' --output './pic/fzfs'
     python cut_pics_batch.py --input 'outputs/FZZCHJW2/' --output './pic/FZZCHJW'
+    python cut_pics_batch.py --input C:\\Users\\lawrence\\Pictures\\111\\cpp6838 --output ./pic/cpp --rect_size 85 --ignore_min_size 240 --ignore_max_size 280
+    python cut_pics_batch.py --input C:\\Users\\lawrence\\Pictures\\111\\crh6838 --output ./pic/crh --rect_size 85 --ignore_min_size 240 --ignore_max_size 280
+    python cut_pics_batch.py --input 'input/test' --rect_size 85 --ignore_min_size 240 --ignore_max_size 280
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', dest='input_path', default='input/', help='Please set the input path')

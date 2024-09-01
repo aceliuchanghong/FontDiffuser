@@ -103,9 +103,9 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', dest='input_path', default='from/from4.jpg',
-                        help='Please set the input path')
+                        help='输入图片路径')
     parser.add_argument('--output', dest='output_path', default='./pic',
-                        help='Please set the output path')
+                        help='输出的图片位置')
     parser.add_argument('--rect_size', dest='rect_size', default=15, type=int,
                         help='膨胀腐蚀大小')
     parser.add_argument('--ignore_min_size', dest='ignore_min_size', default=80, type=int,

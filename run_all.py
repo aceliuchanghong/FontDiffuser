@@ -45,11 +45,11 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', dest='input_path', default='pic/cpp/ans',
-                        help='图片地址')
+                        help='风格图片地址')
     parser.add_argument('--name', dest='ttf_name', default='cpp',
                         help='字体名字')
     parser.add_argument('--v', dest='version', default='v1.0', help='字体版本')
-    parser.add_argument('--cuda', dest='cuda', default='cuda:0', help='gpu')
+    parser.add_argument('--cuda', dest='cuda', default='cuda:0', help='gpu指定')
 
     opt = parser.parse_args()
     run(opt)
