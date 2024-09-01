@@ -1,10 +1,12 @@
 import fontforge
 import math
+import argparse
+import os
 
 
-def adjust_glyph_positions(font_path):
+def adjust_glyph_positions(input_ttf, out_name, version, output_path):
     # 打开字体文件
-    font = fontforge.open(font_path)
+    font = fontforge.open(input_ttf)
 
     for glyph in font.glyphs():
         if glyph.isWorthOutputting():
@@ -28,14 +30,30 @@ def adjust_glyph_positions(font_path):
             glyph.left_side_bearing = left_bearing
             glyph.right_side_bearing = left_bearing
 
+    # 设置字体版本
+    font.version = version
+    # 构建输出文件路径
+    output_file = os.path.join(output_path, f"{out_name}.ttf")
     # 保存修改后的字体
-    output_path = font_path.replace('.ttf', '_adjusted.ttf')
-    font.generate(output_path)
+    font.generate(output_file)
     font.close()
+    print(f"调整后的字体已保存为: {output_file}")
 
-    print(f"调整后的字体已保存为: {output_path}")
+
+def main():
+    parser = argparse.ArgumentParser(description="调整字体文件的字形位置")
+    parser.add_argument("input_ttf", help="输入TTF文件的路径")
+    parser.add_argument("out_name", help="输出字体文件的名称（不包含扩展名）")
+    parser.add_argument("version", help="字体版本")
+    parser.add_argument("output_path", help="输出文件夹路径")
+
+    args = parser.parse_args()
+
+    adjust_glyph_positions(args.input_ttf, args.out_name, args.version, args.output_path)
 
 
-# 使用示例
-font_path = r"C:\Users\lawrence\Documents\WeChat Files\wxid_yamvaf39vkqm22\FileStorage\File\2024-09\crh.ttf"
-adjust_glyph_positions(font_path)
+if __name__ == "__main__":
+    """
+    ffpython C:\\Users\\lawrence\\PycharmProjects\\FontDiffuser\\to_ttf2.py --input_ttf --out_name --version --output_path
+    """
+    main()
