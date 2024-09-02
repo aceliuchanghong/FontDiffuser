@@ -2,8 +2,8 @@ const fs = require("fs").promises;
 const { exec } = require("child_process");
 const util = require("util");
 const asyncPool = require("tiny-async-pool");
-const inputFolder = "./svg_separate";
-const outputFolder = "./pico";
+const inputFolder = process.argv[2] || "./svg_separate";
+const outputFolder = process.argv[3] || "./pico";
 const concurrency = 20; // 同时执行的最大任务数量 太高可能导致 EBADF 错误
 const execPromise = util.promisify(exec);
 async function asyncPoolAll(...args) {

@@ -32,6 +32,9 @@ def adjust_glyph_positions(input_ttf, out_name, version, output_path):
 
     # 设置字体版本
     font.version = version
+    font.fontname = out_name
+    font.familyname = out_name
+    font.fullname = out_name
     # 构建输出文件路径
     output_file = os.path.join(output_path, f"{out_name}.ttf")
     # 保存修改后的字体
@@ -42,10 +45,10 @@ def adjust_glyph_positions(input_ttf, out_name, version, output_path):
 
 def main():
     parser = argparse.ArgumentParser(description="调整字体文件的字形位置")
-    parser.add_argument("input_ttf", help="输入TTF文件的路径")
-    parser.add_argument("out_name", help="输出字体文件的名称（不包含扩展名）")
-    parser.add_argument("version", help="字体版本")
-    parser.add_argument("output_path", help="输出文件夹路径")
+    parser.add_argument("--input_ttf", dest='input_ttf', help="输入TTF文件的路径")
+    parser.add_argument("--out_name", dest='out_name', help="输出字体文件的名称（不包含扩展名）")
+    parser.add_argument("--version", dest='version', default='v1.0', help="字体版本")
+    parser.add_argument("--output_path", dest='output_path', default='./', help="输出文件夹路径")
 
     args = parser.parse_args()
 

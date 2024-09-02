@@ -4,7 +4,7 @@ const path = require("path");
 const ProgressBar = require("progress");
 // /mnt/data/llch/FontDiffuser/pic/cpp/ans
 const inputDir = path.join(process.argv[2])|| path.join("D:\\aProject\\py\\FontDiffuser\\outputs\\cpp");
-const outputDir = path.join(__dirname, "svg_separate");
+const outputDir = path.join(process.argv[3]) || path.join(__dirname, "svg_separate");
 
 // 读取文件夹所有文件
 fs.readdir(inputDir, function (err, files) {
