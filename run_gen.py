@@ -1,14 +1,40 @@
+import os
 import subprocess
 import argparse
 
 
 def run(opt):
-    subprocess.run(["node", "potrace.js", f"{opt.input_path}"])
-    print("potrace suc")
-    subprocess.run(["node", "run_pico.js"])
-    print("pico suc")
-    subprocess.run(["/usr/bin/python3", "to_ttf.py", "--name", f"{opt.ttf_name}", "--v", f"{opt.version}"])
-    print(f"{opt.ttf_name}.ttf")
+    input_style_path = opt.input_path
+    gen_output_path = os.path.basename(os.path.normpath(input_style_path))
+    # 目标路径
+    if not os.path.exists('svg_separate/'):
+        os.makedirs(f'svg_separate/')
+    if not os.path.exists(f'svg_separate_{gen_output_path}/'):
+        os.makedirs(f'svg_separate_{gen_output_path}/')
+    print(f"makedir:svg_separate,svg_separate_{gen_output_path}")
+
+    subprocess.run(["rm", f"svg_separate_{gen_output_path}/*"])
+    subprocess.run(["rm", f"pico_{gen_output_path}/*"])
+    subprocess.run(["rm", "svg_separate/*"])
+    subprocess.run(["rm", "pico/*"])
+
+    subprocess.run(["node", "potrace.js", f"outputs/{gen_output_path}/", f"svg_separate_{gen_output_path}/"])
+    print(f"svg_separate路径:svg_separate_{gen_output_path}")
+    subprocess.run(["node", "run_pico.js", f"svg_separate_{gen_output_path}/", f"pico_{gen_output_path}/"])
+    print(f"pico路径:pico_{gen_output_path}/")
+    subprocess.run(
+        ["/usr/bin/python3", "to_ttf.py", "--input", f"pico_{gen_output_path}/", "--name",
+         f"{opt.ttf_name}_adjust_before", "--v", f"{opt.version}"])
+    print(f"{opt.ttf_name}_adjust_before.ttf")
+    subprocess.run(
+        ["/usr/bin/python3", "adjust_ttf.py", "--input_ttf", f"{opt.ttf_name}_adjust_before.ttf", "--out_name",
+         f"{opt.ttf_name}", "--version", f"{opt.version}", "--output_path", f"./"])
+    print("\n\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n\n")
+    print(f"输出图片路径:outputs/{gen_output_path}/")
+    print(f"svg_separate路径:svg_separate_{gen_output_path}")
+    print(f"pico路径:pico_{gen_output_path}/")
+    print(f"初步字体:{opt.ttf_name}_adjust_before.ttf")
+    print(f"结果字体:{opt.ttf_name}.ttf")
 
 
 if __name__ == '__main__':
@@ -19,7 +45,7 @@ if __name__ == '__main__':
     python run_gen.py --input outputs/crh3/ --name crh --v v1.1
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input', dest='input_path', default='pic/cpp/ans',
+    parser.add_argument('--input', dest='input_path', default='outputs/cpp_ai/',
                         help='生成的图片地址')
     parser.add_argument('--name', dest='ttf_name', default='cpp',
                         help='字体名字')
