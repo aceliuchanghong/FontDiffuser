@@ -41,12 +41,13 @@ if __name__ == '__main__':
     """
     conda activate fontdiffuser
     /mnt/data/llch/FontDiffuser
-    python run_gen.py --input outputs/cpp3/ --name cpp --v v1.1
-    python run_gen.py --input outputs/crh3/ --name crh --v v1.1
+    python run_gen.py --input outputs/test_diff/ --name test_diff --v v1.1
+    python run_gen.py --input outputs/cpp_ai/ --name 火炬_cpp1.0 --v v1.1
+    python run_gen.py --input outputs/crh_ai/ --name 火炬_crh1.0 --v v1.1
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', dest='input_path', default='outputs/cpp_ai/',
-                        help='生成的图片地址')
+                        help='生成的图片地址,一定要outputs/xxx/这种格式')
     parser.add_argument('--name', dest='ttf_name', default='cpp',
                         help='字体名字')
     parser.add_argument('--v', dest='version', default='v1.0', help='字体版本')

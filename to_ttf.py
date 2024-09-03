@@ -16,12 +16,10 @@ def main():
     # 创建字体
     font = fontforge.font()
     font.encoding = 'UnicodeFull'
-    font.version = '1.0'
+    font.version = opt.version
     font.weight = 'Regular'
     if font_name:
         font.fontname = font_name
-        font.familyname = f'{font_name}-family'
-        font.fullname = f'{font_name}-fullname'
     else:
         font.fontname = 'test'
     for img_path in img_list:
@@ -59,5 +57,5 @@ if __name__ == "__main__":
     opt = parser.parse_args()
     img_dir = opt.img_dir
     output = f'{opt.name}.ttf'
-    font_name = f'torch-{opt.name}-{opt.version}'
+    font_name = f'torch-{opt.name}'
     main()

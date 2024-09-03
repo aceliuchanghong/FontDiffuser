@@ -1,4 +1,6 @@
 import random
+import time
+
 import gradio as gr
 
 from dataset.font2image import process_fonts
@@ -8,7 +10,91 @@ from sample import (arg_parse,
 import uvicorn
 from fastapi import FastAPI
 from PIL import Image
+import subprocess
+
+from utils_2 import duplicate_image
+
 import os
+from datetime import datetime
+
+
+def get_latest_png_within_3_hours(directory):
+    latest_time = None
+    for file in os.listdir(directory):
+        if file.endswith('.png') or file.endswith('.jpg'):
+            full_path = os.path.join(directory, file)
+            modification_time = os.path.getmtime(full_path)
+            file_time = datetime.fromtimestamp(modification_time)
+
+            if latest_time is None or file_time > latest_time:
+                latest_time = file_time
+            # 如果目录下没有png文件
+    if latest_time is None:
+        return False, None
+        # 检查最近的png文件是否在3小时内修改过
+    if (datetime.now() - latest_time).total_seconds() <= 3 * 3600:
+        return True, "还在生成"
+        # 如果没有png文件在3小时内修改过
+    return False, None
+
+
+def generate_font(upload_pic_style, font_name, font_version):
+    if len(font_name) < 1 or font_name == 'torch':
+        return gr.update(value="字体名字没有取", visible=True)
+    if not upload_pic_style or len(upload_pic_style) < 24:
+        return gr.update(value="请上传至少24张风格图片", visible=True)
+    gen_path = f'data_examples/test_style/{font_name}/'
+    if not os.path.exists(gen_path):
+        os.makedirs(gen_path)
+    print(upload_pic_style)
+
+    result, _ = get_latest_png_within_3_hours(gen_path)
+    print(result)
+    if result:
+        return gr.update(value="字体已经在生成中,大约需要180分钟,请勿重复点击", visible=True)
+    duplicate_image(upload_pic_style[0], gen_path, 24)
+    free_gpu = str(get_most_idle_gpu())
+
+    print(font_name)
+    print(font_version)
+    print(free_gpu)
+    command = [
+        "nohup", "python", "run_all.py",
+        "--input", gen_path,
+        "--name", font_name,
+        "--v", font_version,
+        "--cuda", f"cuda:{free_gpu}"
+    ]
+    with open(f'output_{font_name}.log', 'w') as outfile:
+        subprocess.Popen(command, stdout=outfile, stderr=subprocess.STDOUT)
+
+    time.sleep(20)
+
+    return gr.update(value="开始字体生成！大约需要180分钟,请等待", visible=True)
+
+
+def get_most_idle_gpu():
+    # 运行 nvidia-smi 命令
+    result = subprocess.run(
+        ['nvidia-smi', '--query-gpu=index,memory.used,utilization.gpu', '--format=csv,noheader,nounits'],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    # 检查是否有错误
+    if result.stderr:
+        print("Error running nvidia-smi:", result.stderr)
+        return None
+    # 处理输出
+    gpu_data = result.stdout.strip().split('\n')
+    min_utilization = 100  # 初始化最大可能的利用率 (100%)
+    idle_gpu_index = -1
+    for gpu in gpu_data[::-1]:
+        index, memory_used, utilization = gpu.split(', ')
+        utilization = int(utilization)
+        index = int(index)
+        # 找到具有最低利用率的GPU
+        if utilization < min_utilization:
+            min_utilization = utilization
+            idle_gpu_index = index
+    return idle_gpu_index
 
 
 def run_fontdiffuer(
@@ -37,6 +123,30 @@ def run_fontdiffuer(
     return out_image
 
 
+def download_font(name):
+    # 获取当前工作目录路径
+    current_dir = os.getcwd()
+    output_dir = os.path.join(current_dir, 'outputs', name)
+    # 获取图片
+    files = [f for f in os.listdir(output_dir) if f.endswith('.png')]
+    if not files:
+        print(f"No image files found in '{output_dir}'.")
+        return None, None
+    files.sort(key=lambda x: os.path.getmtime(os.path.join(output_dir, x)), reverse=True)
+    last_pic_path = os.path.join(output_dir, files[0])
+    print(f"pic file '{last_pic_path}' found.")
+    # 构建字体文件路径
+    ttf_file = os.path.join(current_dir, f"{name}.ttf")
+
+    # 检查文件是否存在
+    if os.path.isfile(ttf_file):
+        print(f"Font file '{ttf_file}' found.")
+        return last_pic_path, ttf_file
+    else:
+        print(f"Font file '{ttf_file}' not found.")
+        return last_pic_path, None
+
+
 # Initialize FastAPI
 app = FastAPI()
 
@@ -51,6 +161,10 @@ if __name__ == '__main__':
     args.ckpt_dir = 'ckpt'
     args.ttf_path = 'ttf/LXGWWenKaiGB-Light.ttf'
     args.ttf_pic_path = 'ttf_pics/LXGWWenKaiGB-Light/'
+
+    upload_default_path = './upload_pic_default_dir'
+    if not os.path.exists(upload_default_path):
+        os.makedirs(upload_default_path)
 
     # load fontdiffuer pipeline
     pipe = load_fontdiffuer_pipeline(args=args)
@@ -145,12 +259,17 @@ if __name__ == '__main__':
             gr.Markdown("---")
         with gr.Row():
             with gr.Column(scale=2):
-                upload_pic_style = gr.File(label="🛠️上传字体图片(24-36张)", file_count="multiple", file_types=["image"])
+                upload_pic_style = gr.File(label="🛠️上传字体图片(24-36张)", file_count="multiple",
+                                           file_types=['.png', '.jpg'])
+                upload_pic_style.GRADIO_CACHE = upload_default_path
                 with gr.Row():
-                    font_name = gr.Textbox(label='输入字体名称', value='torch', placeholder='torch', interactive=True,
-                                           info='给自己的字体取个名字')
-                    font_version = gr.Textbox(label='输入字体版本', value='v1.0', placeholder='v1.0', interactive=True,
-                                              info='给自己的字体附加版本号')
+                    font_name = gr.Textbox(label='输入字体名称', value='try_name_it',
+                                           info='字体取名,必输值',
+                                           interactive=True,
+                                           )
+                    font_version = gr.Textbox(label='输入字体版本号', value='v1.0', placeholder='v1.0',
+                                              interactive=True,
+                                              info='字体附加版本号,非必选,一般默认v1.0即可')
             with gr.Column(scale=1):
                 gr.HTML("""<h2 style="text-align: left; font-weight: 600; font-size: 1rem; margin-top: 0.5rem; margin-bottom: 0.5rem">
                                                     字体文件生成
@@ -159,16 +278,26 @@ if __name__ == '__main__':
                 gr.Image('data_examples/using_files/arrow2.svg', label='')
                 Generate_Font = gr.Button('点击生成字体', icon='data_examples/using_files/shoot.ico',
                                           variant='primary', size="lg")
+                show = gr.Textbox(visible=False)
             with gr.Column(scale=2):
                 with gr.Row():
                     preview_image = gr.Image(width=320, label='字体预览', image_mode='RGB', type='pil',
                                              height=320)
-                    refreshing = gr.Button('📖刷新图片', variant='primary', size="lg")
+                    refreshing = gr.Button('📖刷新图片/字体-注意:\n名字需要填自己命名的字体名称(否则会报错)',
+                                           variant='secondary')
+                download = gr.File(label='字体下载')
 
 
         def dummy_function(image):
             return image
 
+
+        Generate_Font.click(
+            fn=generate_font,  # 当用户点击确认后调用的函数
+            inputs=[upload_pic_style, font_name, font_version],
+            outputs=show
+        )
+        refreshing.click(fn=download_font, inputs=[font_name], outputs=[preview_image, download])
 
         reference_image.upload(dummy_function, inputs=reference_image, outputs=reference_image)
         FontDiffuser.click(
@@ -185,4 +314,8 @@ if __name__ == '__main__':
     app = gr.mount_gradio_app(app, demo, path="/")
 
     # Run the Uvicorn server
-    uvicorn.run(app, host="0.0.0.0", port=813, log_level="info")
+    # conda activate fontdiffuser
+    # cd /mnt/data/llch/FontDiffuser
+    uvicorn.run(app, host="0.0.0.0", port=909, log_level="info")
+    # python font_complex_ui.py
+    # nohup python font_complex_ui.py > v_complex.log &
