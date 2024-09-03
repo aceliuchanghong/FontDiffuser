@@ -10,6 +10,42 @@ from fastapi import FastAPI
 from PIL import Image
 import os
 
+example_list = [
+    "data_examples/sampling/crh.png",
+    "data_examples/sampling/依.png",
+    "data_examples/train/ContentImage/氮.jpg",
+    "data_examples/sampling/哀.png",
+    "data_examples/train/TargetImage/FZGuanJKSJW/FZGuanJKSJW+氮.jpg",
+    "data_examples/train/TargetImage/FZOuYHGXSJW/FZOuYHGXSJW+舶.jpg",
+    "data_examples/sampling/9_802_1790.jpg",
+    "data_examples/sampling/example_style.jpg",
+    "data_examples/train/TargetImage/FZZCHJW/FZZCHJW+潮.jpg",
+    "data_examples/just_show/hanrui_50W/潮.png",
+    "data_examples/just_show/HYAoDeSaiU/潮.png",
+    "data_examples/just_show/HYChaoCuSongJ/潮.png",
+    "data_examples/just_show/HYChenMeiZiJ/潮.png",
+    "data_examples/just_show/HYCuSongJF/潮.png",
+    "data_examples/just_show/HYDiShengXiLeTiW/潮.png",
+    "data_examples/just_show/HYDiShengYingXiongTiW/潮.png",
+    "data_examples/just_show/HYDongHaiMoXingW/潮.png",
+    "data_examples/just_show/HYDongMeiRenW/潮.png",
+    "data_examples/just_show/HYJiangJun-85W/潮.png",
+    "data_examples/just_show/HYJinLingMeiSongW/潮.png",
+    "data_examples/just_show/HYJiuWeiW/潮.png",
+    "data_examples/just_show/HYLingXinClassic105W/潮.png",
+    "data_examples/just_show/HYPaiBianSongW/潮.png",
+    "data_examples/just_show/HYQinChuanFeiYingW/潮.png",
+    "data_examples/just_show/HYQingZhouXingW/潮.png",
+    "data_examples/just_show/HYShangWeiMoYouW/潮.png",
+    "data_examples/just_show/HYXiaoMaiTiJ/潮.png",
+    "data_examples/just_show/HYYongZiLongHuBangW/潮.png",
+    "data_examples/just_show/HYYongZiWuShiW/潮.png",
+    "data_examples/just_show/HYZhuoKaiW/潮.png",
+    "data_examples/just_show/HYZhuZiBanKeSiW/潮.png",
+    "data_examples/just_show/HYZhuZiHaiDiShiJieW/潮.png",
+    "data_examples/just_show/HYZhuZiHeiMoFaW/潮.png",
+]
+
 
 def run_fontdiffuer(
         character,
@@ -34,11 +70,17 @@ def run_fontdiffuer(
         pipe=pipe,
         content_image=source_image,
         style_image=reference_image)
-    return out_image
+    print('out_image:', out_image)
+    # out_image: <PIL.Image.Image image mode=RGB size=96x96 at 0x7FBC6EF9B2B0>
 
+    output_dir = "data_examples/test"
+    os.makedirs(output_dir, exist_ok=True)
+    new_filename = f'{character[0]}.png'
+    new_file_path = os.path.join(output_dir, new_filename)
+    out_image.save(new_file_path)
 
-# Initialize FastAPI
-app = FastAPI()
+    return new_file_path
+
 
 if __name__ == '__main__':
     """
@@ -46,6 +88,8 @@ if __name__ == '__main__':
     python font_easy_ui.py
     nohup python font_easy_ui.py > s_words.log &
     """
+    # Initialize FastAPI
+    app = FastAPI()
     args = arg_parse()
     args.demo = True
     args.ckpt_dir = 'ckpt'
@@ -74,23 +118,14 @@ if __name__ == '__main__':
                     reference_image = gr.Image(width=320, label=' 1️⃣:上传风格文字', image_mode='RGB', type='pil',
                                                height=320)
                     gr.Examples(label=' 1️⃣:点击选择风格字体',
-                                examples=[
-                                    "data_examples/sampling/crh.png",
-                                    "data_examples/train/ContentImage/氮.jpg",
-                                    "data_examples/sampling/哀.png",
-                                    "data_examples/train/TargetImage/FZGuanJKSJW/FZGuanJKSJW+氮.jpg",
-                                    "data_examples/train/TargetImage/FZOuYHGXSJW/FZOuYHGXSJW+舶.jpg",
-                                    "data_examples/sampling/9_802_1790.jpg",
-                                    "data_examples/sampling/example_style.jpg",
-                                    "data_examples/train/TargetImage/FZZCHJW/FZZCHJW+潮.jpg",
-                                ],
+                                examples=example_list,
                                 inputs=reference_image,
                                 )
                 with gr.Row():
                     character = gr.Textbox(value='道', label='2️⃣:输入要生成的文字')
                 with gr.Row():
                     fontdiffuer_output_image = gr.Image(height=200, label="输出字体", image_mode='RGB',
-                                                        type='pil')
+                                                        type='filepath')
 
                 sampling_step = gr.Slider(20, 50, value=20, step=10,
                                           label="推理步数", info="默认20,步数越多时间越久,效果越好")

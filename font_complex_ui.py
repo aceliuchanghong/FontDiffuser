@@ -1,21 +1,14 @@
-import random
 import time
-
+import os
+from datetime import datetime
 import gradio as gr
-
-from dataset.font2image import process_fonts
+from font_easy_ui import run_fontdiffuer, example_list
 from sample import (arg_parse,
-                    sampling,
                     load_fontdiffuer_pipeline)
 import uvicorn
 from fastapi import FastAPI
-from PIL import Image
 import subprocess
-
 from utils_2 import duplicate_image
-
-import os
-from datetime import datetime
 
 
 def get_latest_png_within_3_hours(directory):
@@ -97,32 +90,6 @@ def get_most_idle_gpu():
     return idle_gpu_index
 
 
-def run_fontdiffuer(
-        character,
-        reference_image,
-        sampling_step,
-        guidance_scale,
-):
-    source_image = args.ttf_pic_path + "/" + character[0] + ".png"
-    if not os.path.exists(source_image):
-        try:
-            process_fonts('ttf', 'ttf_pics', character[0])
-        except Exception as e:
-            print(e)
-    source_image = Image.open(source_image).convert('RGB')
-    args.character_input = False if source_image is not None else True
-    args.content_character = character
-    args.sampling_step = sampling_step
-    args.guidance_scale = guidance_scale
-    args.seed = random.randint(0, 10000)
-    out_image = sampling(
-        args=args,
-        pipe=pipe,
-        content_image=source_image,
-        style_image=reference_image)
-    return out_image
-
-
 def download_font(name):
     # 获取当前工作目录路径
     current_dir = os.getcwd()
@@ -147,15 +114,14 @@ def download_font(name):
         return last_pic_path, None
 
 
-# Initialize FastAPI
-app = FastAPI()
-
 if __name__ == '__main__':
     """
     conda activate fontdiffuser
     python font_complex_ui.py
     nohup python font_complex_ui.py > s_words2.log &
     """
+    # Initialize FastAPI
+    app = FastAPI()
     args = arg_parse()
     args.demo = True
     args.ckpt_dir = 'ckpt'
@@ -198,41 +164,7 @@ if __name__ == '__main__':
                     reference_image = gr.Image(width=320, label=' 1️⃣:上传风格文字', image_mode='RGB', type='pil',
                                                height=320)
                     gr.Examples(label=' 1️⃣:点击选择风格字体',
-                                examples=[
-                                    "data_examples/sampling/crh.png",
-                                    "data_examples/sampling/依.png",
-                                    "data_examples/train/ContentImage/氮.jpg",
-                                    "data_examples/sampling/哀.png",
-                                    "data_examples/train/TargetImage/FZGuanJKSJW/FZGuanJKSJW+氮.jpg",
-                                    "data_examples/train/TargetImage/FZOuYHGXSJW/FZOuYHGXSJW+舶.jpg",
-                                    "data_examples/sampling/9_802_1790.jpg",
-                                    "data_examples/sampling/example_style.jpg",
-                                    "data_examples/train/TargetImage/FZZCHJW/FZZCHJW+潮.jpg",
-                                    "data_examples/just_show/hanrui_50W/潮.png",
-                                    "data_examples/just_show/HYAoDeSaiU/潮.png",
-                                    "data_examples/just_show/HYChaoCuSongJ/潮.png",
-                                    "data_examples/just_show/HYChenMeiZiJ/潮.png",
-                                    "data_examples/just_show/HYCuSongJF/潮.png",
-                                    "data_examples/just_show/HYDiShengXiLeTiW/潮.png",
-                                    "data_examples/just_show/HYDiShengYingXiongTiW/潮.png",
-                                    "data_examples/just_show/HYDongHaiMoXingW/潮.png",
-                                    "data_examples/just_show/HYDongMeiRenW/潮.png",
-                                    "data_examples/just_show/HYJiangJun-85W/潮.png",
-                                    "data_examples/just_show/HYJinLingMeiSongW/潮.png",
-                                    "data_examples/just_show/HYJiuWeiW/潮.png",
-                                    "data_examples/just_show/HYLingXinClassic105W/潮.png",
-                                    "data_examples/just_show/HYPaiBianSongW/潮.png",
-                                    "data_examples/just_show/HYQinChuanFeiYingW/潮.png",
-                                    "data_examples/just_show/HYQingZhouXingW/潮.png",
-                                    "data_examples/just_show/HYShangWeiMoYouW/潮.png",
-                                    "data_examples/just_show/HYXiaoMaiTiJ/潮.png",
-                                    "data_examples/just_show/HYYongZiLongHuBangW/潮.png",
-                                    "data_examples/just_show/HYYongZiWuShiW/潮.png",
-                                    "data_examples/just_show/HYZhuoKaiW/潮.png",
-                                    "data_examples/just_show/HYZhuZiBanKeSiW/潮.png",
-                                    "data_examples/just_show/HYZhuZiHaiDiShiJieW/潮.png",
-                                    "data_examples/just_show/HYZhuZiHeiMoFaW/潮.png",
-                                ],
+                                examples=example_list,
                                 inputs=reference_image,
                                 )
                 with gr.Row():
@@ -245,7 +177,7 @@ if __name__ == '__main__':
                 gr.Image('data_examples/using_files/arrow2.svg', label='')
             with gr.Column(scale=2):
                 fontdiffuer_output_image = gr.Image(height=200, label="输出字体", image_mode='RGB',
-                                                    type='pil')
+                                                    type='filepath')
 
                 sampling_step = gr.Slider(20, 50, value=20, step=10,
                                           label="推理步数", info="默认20,步数越多时间越久,效果越好")
