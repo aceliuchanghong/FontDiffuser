@@ -135,3 +135,7 @@ gradio gradio_app.py
 <img src="figures/gradio_fontdiffuer_new.png" width="80%" height="auto">
 </p>
 
+```text
+给出新的代码,使得风格特征只需要提取一次,然后应用到所有的内容图像上
+需要预先计算的风格潜在表示,同时也需要修改 FontDiffuserDPMPipeline 类
+```

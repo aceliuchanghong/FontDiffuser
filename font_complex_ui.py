@@ -32,7 +32,7 @@ def get_latest_png_within_3_hours(directory):
 
 
 def generate_font(upload_pic_style, font_name, font_version):
-    if len(font_name) < 1 or font_name == 'torch':
+    if len(font_name) < 1 or font_name == 'try_name_it':
         return gr.update(value="字体名字没有取", visible=True)
     if not upload_pic_style or len(upload_pic_style) < 24:
         return gr.update(value="请上传至少24张风格图片", visible=True)
