@@ -1,3 +1,4 @@
+import random
 import time
 import os
 from datetime import datetime
@@ -31,37 +32,38 @@ def get_latest_png_within_3_hours(directory):
     return False, None
 
 
-def generate_font(upload_pic_style, font_name, font_version):
+def generate_font(upload_pic_style, font_name, font_version, test_font):
     if len(font_name) < 1 or font_name == 'try_name_it':
         return gr.update(value="字体名字没有取", visible=True)
-    if not upload_pic_style or len(upload_pic_style) < 24:
-        return gr.update(value="请上传至少24张风格图片", visible=True)
+    if not upload_pic_style or len(upload_pic_style) < 12:
+        return gr.update(value="请上传至少12张相同风格图片", visible=True)
     gen_path = f'data_examples/test_style/{font_name}/'
     if not os.path.exists(gen_path):
         os.makedirs(gen_path)
     print(upload_pic_style)
 
     result, _ = get_latest_png_within_3_hours(gen_path)
-    print(result)
     if result:
         return gr.update(value="字体已经在生成中,大约需要180分钟,请勿重复点击", visible=True)
     duplicate_image(upload_pic_style[0], gen_path, 24)
     free_gpu = str(get_most_idle_gpu())
-
     print(font_name)
     print(font_version)
     print(free_gpu)
+
+    basic_path = 'data_examples/basic/test/' if test_font else 'data_examples/basic/LXGWWenKaiGB-Light/'
     command = [
         "nohup", "python", "run_all.py",
         "--input", gen_path,
         "--name", font_name,
         "--v", font_version,
-        "--cuda", f"cuda:{free_gpu}"
+        "--cuda", f"cuda:{free_gpu}",
+        "--basic_path", basic_path
     ]
     with open(f'output_{font_name}.log', 'w') as outfile:
         subprocess.Popen(command, stdout=outfile, stderr=subprocess.STDOUT)
 
-    time.sleep(20)
+    time.sleep(10)
 
     return gr.update(value="开始字体生成！大约需要180分钟,请等待", visible=True)
 
@@ -99,19 +101,20 @@ def download_font(name):
     if not files:
         print(f"No image files found in '{output_dir}'.")
         return None, None
-    files.sort(key=lambda x: os.path.getmtime(os.path.join(output_dir, x)), reverse=True)
-    last_pic_path = os.path.join(output_dir, files[0])
-    print(f"pic file '{last_pic_path}' found.")
+    # 随机选择一张图片
+    random_pic = random.choice(files)
+    random_pic_path = os.path.join(output_dir, random_pic)
+    print(f"Random pic file '{random_pic_path}' selected.")
     # 构建字体文件路径
     ttf_file = os.path.join(current_dir, f"{name}.ttf")
 
     # 检查文件是否存在
     if os.path.isfile(ttf_file):
         print(f"Font file '{ttf_file}' found.")
-        return last_pic_path, ttf_file
+        return random_pic_path, ttf_file
     else:
         print(f"Font file '{ttf_file}' not found.")
-        return last_pic_path, None
+        return random_pic_path, None
 
 
 if __name__ == '__main__':
@@ -191,7 +194,7 @@ if __name__ == '__main__':
             gr.Markdown("---")
         with gr.Row():
             with gr.Column(scale=2):
-                upload_pic_style = gr.File(label="🛠️上传字体图片(24-36张)", file_count="multiple",
+                upload_pic_style = gr.File(label="🛠️上传字体图片(12-24张)", file_count="multiple",
                                            file_types=['.png', '.jpg'])
                 upload_pic_style.GRADIO_CACHE = upload_default_path
                 with gr.Row():
@@ -202,6 +205,8 @@ if __name__ == '__main__':
                     font_version = gr.Textbox(label='输入字体版本号', value='v1.0', placeholder='v1.0',
                                               interactive=True,
                                               info='字体附加版本号,非必选,一般默认v1.0即可')
+                    test_font_checkbox = gr.Checkbox(label="是否选择测试字体生成", value=True,
+                                                     info="仅测试-速度快")
             with gr.Column(scale=1):
                 gr.HTML("""<h2 style="text-align: left; font-weight: 600; font-size: 1rem; margin-top: 0.5rem; margin-bottom: 0.5rem">
                                                     字体文件生成
@@ -226,7 +231,7 @@ if __name__ == '__main__':
 
         Generate_Font.click(
             fn=generate_font,  # 当用户点击确认后调用的函数
-            inputs=[upload_pic_style, font_name, font_version],
+            inputs=[upload_pic_style, font_name, font_version, test_font_checkbox],
             outputs=show
         )
         refreshing.click(fn=download_font, inputs=[font_name], outputs=[preview_image, download])

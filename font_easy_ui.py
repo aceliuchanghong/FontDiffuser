@@ -10,6 +10,12 @@ from fastapi import FastAPI
 from PIL import Image
 import os
 
+args = arg_parse()
+args.demo = True
+args.ckpt_dir = 'ckpt'
+args.ttf_path = 'ttf/LXGWWenKaiGB-Light.ttf'
+args.ttf_pic_path = 'ttf_pics/LXGWWenKaiGB-Light/'
+pipe = load_fontdiffuer_pipeline(args=args)
 example_list = [
     "data_examples/sampling/crh.png",
     "data_examples/sampling/依.png",
@@ -53,33 +59,65 @@ def run_fontdiffuer(
         sampling_step,
         guidance_scale,
 ):
-    source_image = args.ttf_pic_path + "/" + character[0] + ".png"
-    if not os.path.exists(source_image):
-        try:
-            process_fonts('ttf', 'ttf_pics', character[0])
-        except Exception as e:
-            print(e)
-    source_image = Image.open(source_image).convert('RGB')
-    args.character_input = False if source_image is not None else True
-    args.content_character = character
-    args.sampling_step = sampling_step
-    args.guidance_scale = guidance_scale
-    args.seed = random.randint(0, 10000)
-    out_image = sampling(
-        args=args,
-        pipe=pipe,
-        content_image=source_image,
-        style_image=reference_image)
-    print('out_image:', out_image)
-    # out_image: <PIL.Image.Image image mode=RGB size=96x96 at 0x7FBC6EF9B2B0>
+    # print("args:", args)
+    if character.startswith('lch:'):
+        text = character[4:]
+        generated_images = []
+        for char in text:
+            source_image = args.ttf_pic_path + "/" + char + ".png"
+            if not os.path.exists(source_image):
+                try:
+                    process_fonts('ttf', 'ttf_pics', char)
+                except Exception as e:
+                    print(e)
+            source_image = Image.open(source_image).convert('RGB')
+            args.character_input = False if source_image is not None else True
+            args.content_character = char
+            args.sampling_step = sampling_step
+            args.guidance_scale = guidance_scale
+            args.seed = random.randint(0, 10000)
+            out_image = sampling(
+                args=args,
+                pipe=pipe,
+                content_image=source_image,
+                style_image=reference_image)
 
-    output_dir = "data_examples/test"
-    os.makedirs(output_dir, exist_ok=True)
-    new_filename = f'{character[0]}.png'
-    new_file_path = os.path.join(output_dir, new_filename)
-    out_image.save(new_file_path)
+            output_dir = "data_examples/test/lch"
+            os.makedirs(output_dir, exist_ok=True)
+            new_filename = f'{char}.png'
+            new_file_path = os.path.join(output_dir, new_filename)
+            out_image.save(new_file_path)
+            generated_images.append(new_file_path)
 
-    return new_file_path
+        return generated_images[0] if generated_images else None
+    else:
+        source_image = args.ttf_pic_path + "/" + character[0] + ".png"
+        if not os.path.exists(source_image):
+            try:
+                process_fonts('ttf', 'ttf_pics', character[0])
+            except Exception as e:
+                print(e)
+        source_image = Image.open(source_image).convert('RGB')
+        args.character_input = False if source_image is not None else True
+        args.content_character = character
+        args.sampling_step = sampling_step
+        args.guidance_scale = guidance_scale
+        args.seed = random.randint(0, 10000)
+        out_image = sampling(
+            args=args,
+            pipe=pipe,
+            content_image=source_image,
+            style_image=reference_image)
+        # print('out_image:', out_image)
+        # out_image: <PIL.Image.Image image mode=RGB size=96x96 at 0x7FBC6EF9B2B0>
+
+        output_dir = "data_examples/test"
+        os.makedirs(output_dir, exist_ok=True)
+        new_filename = f'{character[0]}.png'
+        new_file_path = os.path.join(output_dir, new_filename)
+        out_image.save(new_file_path)
+
+        return new_file_path
 
 
 if __name__ == '__main__':
@@ -90,14 +128,8 @@ if __name__ == '__main__':
     """
     # Initialize FastAPI
     app = FastAPI()
-    args = arg_parse()
-    args.demo = True
-    args.ckpt_dir = 'ckpt'
-    args.ttf_path = 'ttf/LXGWWenKaiGB-Light.ttf'
-    args.ttf_pic_path = 'ttf_pics/LXGWWenKaiGB-Light/'
 
     # load fontdiffuer pipeline
-    pipe = load_fontdiffuer_pipeline(args=args)
 
     with gr.Blocks(title="🎉字体生成🎉") as demo:
         with gr.Row():

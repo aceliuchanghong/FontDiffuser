@@ -139,3 +139,21 @@ gradio gradio_app.py
 给出新的代码,使得风格特征只需要提取一次,然后应用到所有的内容图像上
 需要预先计算的风格潜在表示,同时也需要修改 FontDiffuserDPMPipeline 类
 ```
+
+```text
+整体架构:
+系统采用了扩散模型(Diffusion Model)的架构,主要包含以下几个关键组件:
+UNet: 核心网络,用于生成噪声预测。
+内容编码器(Content Encoder): 提取内容特征。
+风格编码器(Style Encoder): 提取风格特征。
+DPM Solver: 用于从噪声中采样生成图像。
+
+FontDiffuserModelDPM (src/model.py):
+这是整个模型的核心类,整合了UNet、内容编码器和风格编码器。其forward方法处理输入,提取特征,并通过UNet生成噪声预测。
+StyleEncoder (src/modules/style_encoder.py):
+负责提取风格图像的特征。
+FontDiffuserDPMPipeline (batch_gen.py):
+这是整个生成过程的pipeline,包括加载模型、处理输入、运行扩散过程和保存结果。
+train.py 训练:
+训练过程包括数据加载、模型构建、优化器设置和训练循环。使用了Accelerator来支持分布式训练。
+```

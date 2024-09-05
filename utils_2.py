@@ -11,8 +11,16 @@ def duplicate_image(image_path, output_path, nums):
     :param nums: 复制的数量
     duplicate_image('/mnt/data/llch/FontDiffuser/data_examples/test_style/依.png', '/mnt/data/llch/FontDiffuser/data_examples/test_style/cpp_ai', 24)
     """
-    # 检查输出路径是否存在，如果不存在则创建
-    if not os.path.exists(output_path):
+    # 检查输出路径是否存在，存在就删除原来文件,如果不存在则创建
+    if os.path.exists(output_path):
+        # 删除当前目录下的所有文件
+        for file in os.listdir(output_path):
+            file_path = os.path.join(output_path, file)
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)  # 删除文件或符号链接
+            elif os.path.isdir(file_path):
+                os.rmdir(file_path)  # 删除空文件夹
+    else:
         os.makedirs(output_path)
 
     # 获取原始图片的文件名和扩展名

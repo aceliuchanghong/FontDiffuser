@@ -9,7 +9,7 @@ def run(opt):
     subprocess.run([
         "python", "batch_gen.py",
         "--ckpt_dir=ckpt/",
-        "--content_image_dir=data_examples/basic/LXGWWenKaiGB-Light/",
+        f"--content_image_dir={opt.basic_path}",
         # "--content_image_dir=data_examples/basic/test/",
         f"--style_image_dir={opt.input_path}",
         f"--save_image_dir=outputs/{gen_output_path}/",
@@ -69,6 +69,7 @@ if __name__ == '__main__':
                         help='字体名字')
     parser.add_argument('--v', dest='version', default='v1.0', help='字体版本')
     parser.add_argument('--cuda', dest='cuda', default='cuda:0', help='gpu指定')
-
+    parser.add_argument('--basic_path', dest='basic_path', default='data_examples/basic/LXGWWenKaiGB-Light/',
+                        help='basic图片地址')
     opt = parser.parse_args()
     run(opt)
