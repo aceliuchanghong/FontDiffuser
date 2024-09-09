@@ -139,28 +139,28 @@ if __name__ == '__main__':
     pipe = load_fontdiffuer_pipeline(args=args)
 
     with gr.Blocks(title="🎉字体生成🎉") as demo:
-        with gr.Row():
-            with gr.Column(scale=2):
-                gr.HTML("""
-                <h2 style="text-align: left; font-weight: 600; font-size: 1rem; margin-top: 0.5rem; margin-bottom: 0.5rem">
-                    输入示例图片
-                </h2>
-                """)
-                gr.Image('figures/input.png')
-            with gr.Column(scale=1):
-                gr.HTML("""<h2 style="text-align: left; font-weight: 600; font-size: 1rem; margin-top: 0.5rem; margin-bottom: 0.5rem">
-                                    <br><br>示例生成
-                                </h2>
-                        """)
-                gr.Image('data_examples/using_files/arrow2.svg', label='')
-            with gr.Column(scale=2):
-                gr.HTML("""<h2 style="text-align: left; font-weight: 600; font-size: 1rem; margin-top: 0.5rem; margin-bottom: 0.5rem">
-                                    输出示例字体</h2>
-                                """)
-                gr.Image('figures/output.png')
-        with gr.Row():
-            gr.Markdown("---")
-            gr.Markdown("---")
+        # with gr.Row():
+        #     with gr.Column(scale=2):
+        #         gr.HTML("""
+        #         <h2 style="text-align: left; font-weight: 600; font-size: 1rem; margin-top: 0.5rem; margin-bottom: 0.5rem">
+        #             输入示例图片
+        #         </h2>
+        #         """)
+        #         gr.Image('figures/input.png')
+        #     with gr.Column(scale=1):
+        #         gr.HTML("""<h2 style="text-align: left; font-weight: 600; font-size: 1rem; margin-top: 0.5rem; margin-bottom: 0.5rem">
+        #                             <br><br>示例生成
+        #                         </h2>
+        #                 """)
+        #         gr.Image('data_examples/using_files/arrow2.svg', label='')
+        #     with gr.Column(scale=2):
+        #         gr.HTML("""<h2 style="text-align: left; font-weight: 600; font-size: 1rem; margin-top: 0.5rem; margin-bottom: 0.5rem">
+        #                             输出示例字体</h2>
+        #                         """)
+        #         gr.Image('figures/output.png')
+        # with gr.Row():
+        #     gr.Markdown("---")
+        #     gr.Markdown("---")
         with gr.Row():
             with gr.Column(scale=2):
                 with gr.Row():
@@ -173,7 +173,7 @@ if __name__ == '__main__':
                 with gr.Row():
                     character = gr.Textbox(value='道', label='2️⃣:输入要生成的文字')
             with gr.Column(scale=1):
-                gr.HTML("""<h2 style="text-align: left; font-weight: 600; font-size: 1rem; margin-top: 0.5rem; margin-bottom: 0.5rem">
+                gr.HTML("""<h2 style="text-align: left; font-weight: 600; font-size: 1.6rem; margin-top: 0.5rem; margin-bottom: 0.5rem">
                                     <br><br><br><br> 风格图片选择/测试
                                  </h2>
                          """)
@@ -205,10 +205,10 @@ if __name__ == '__main__':
                     font_version = gr.Textbox(label='输入字体版本号', value='v1.0', placeholder='v1.0',
                                               interactive=True,
                                               info='字体附加版本号,非必选,一般默认v1.0即可')
-                    test_font_checkbox = gr.Checkbox(label="是否选择测试字体生成", value=True,
-                                                     info="仅测试-速度快")
+                    test_font_checkbox = gr.Checkbox(label="仅选择测试字体生成-五于天末开下理事画现玫珠表...", value=True,
+                                                     info="仅测试-约20分钟")
             with gr.Column(scale=1):
-                gr.HTML("""<h2 style="text-align: left; font-weight: 600; font-size: 1rem; margin-top: 0.5rem; margin-bottom: 0.5rem">
+                gr.HTML("""<h2 style="text-align: left; font-weight: 600; font-size: 1.6rem; margin-top: 0.5rem; margin-bottom: 0.5rem">
                                                     字体文件生成
                                                  </h2>
                                          """)
@@ -218,8 +218,7 @@ if __name__ == '__main__':
                 show = gr.Textbox(visible=False)
             with gr.Column(scale=2):
                 with gr.Row():
-                    preview_image = gr.Image(width=320, label='字体预览', image_mode='RGB', type='pil',
-                                             height=320)
+                    preview_image = gr.Image(width=200, label='字体预览', image_mode='RGB', type='pil',height=200)
                     refreshing = gr.Button('📖刷新图片/字体-注意:\n名字需要填自己命名的字体名称(否则会报错)',
                                            variant='secondary')
                 download = gr.File(label='字体下载')
@@ -253,6 +252,6 @@ if __name__ == '__main__':
     # Run the Uvicorn server
     # conda activate fontdiffuser
     # cd /mnt/data/llch/FontDiffuser
-    uvicorn.run(app, host="0.0.0.0", port=909, log_level="info")
+    uvicorn.run(app, host="0.0.0.0", port=813, log_level="info")
     # python font_complex_ui.py
     # nohup python font_complex_ui.py > v_complex.log &
