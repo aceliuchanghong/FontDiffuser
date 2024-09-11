@@ -8,10 +8,11 @@ class CollateFN(object):
     def __call__(self, batch):
         batched_data = {}
 
+        # 循环遍历第一个样本的所有键
         for k in batch[0].keys():
             batch_key_data = [ele[k] for ele in batch]
             if isinstance(batch_key_data[0], torch.Tensor):
                 batch_key_data = torch.stack(batch_key_data)
             batched_data[k] = batch_key_data
-        
+
         return batched_data

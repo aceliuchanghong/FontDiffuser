@@ -112,9 +112,7 @@ sh scripts/train_phase_2.sh
 
 ### Step 1 => Prepare the checkpoint
 
-Option (1) Download the checkpoint
-following [GoogleDrive](https://drive.google.com/drive/folders/12hfuZ9MQvXqcteNuz7JQ2B_mUcTr-5jZ?usp=drive_link) / [BaiduYun:gexg](https://pan.baidu.com/s/19t1B7le8x8L2yFGaOvyyBQ),
-then put the `ckpt` to the root directory, including the files `unet.pth`, `content_encoder.pth`,
+Option (1) put the `ckpt` to the root directory, including the files `unet.pth`, `content_encoder.pth`,
 and `style_encoder.pth`.  
 Option (2) Put your re-training checkpoint folder `ckpt` to the root directory, including the
 files `unet.pth`, `content_encoder.pth`, and `style_encoder.pth`.
@@ -137,8 +135,7 @@ sh script/sample_content_image.sh
 - `num_inference_steps`: The inference step by DPM-Solver++.
 
 **(2) Sampling image from content character.**  
-**Note** Maybe you need a ttf file that contains numerous Chinese characters, you can download it
-from [BaiduYun:wrth](https://pan.baidu.com/s/1LhcXG4tPcso9BLaUzU6KtQ).
+**Note** Maybe you need a ttf file that contains numerous Chinese characters
 
 ```bash
 sh script/sample_content_character.sh
@@ -171,6 +168,7 @@ UNet: 核心网络,用于生成噪声预测。
 内容编码器(Content Encoder): 提取内容特征。
 风格编码器(Style Encoder): 提取风格特征。
 DPM Solver: 用于从噪声中采样生成图像。
+classifier-free:使得模型能够在无监督的情况下进行更灵活的生成，提升了整体的生成能力和效果。
 
 FontDiffuserModelDPM (src/model.py):
 这是整个模型的核心类,整合了UNet、内容编码器和风格编码器。其forward方法处理输入,提取特征,并通过UNet生成噪声预测。
