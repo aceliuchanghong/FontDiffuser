@@ -64,7 +64,9 @@ def get_parser():
     parser.add_argument("--learning_rate", type=float, default=1e-4,
                         help="Initial learning rate (after the potential warmup period) to use.")
     parser.add_argument("--scale_lr", action="store_true", default=False,
-                        help="Scale the learning rate by the number of GPUs, gradient accumulation steps, and batch size.")
+                        help="Scale the learning rate by the number of GPUs, gradient accumulation steps, and batch size.\
+                        如果启用 (--scale_lr)，学习率会根据这些因素自动调整，适应分布式训练的情况。否则，学习率将保持为固定值，不进行缩放。\
+                        这在多GPU或分布式训练场景下非常有用，因为批量大小和计算资源的增加通常需要相应地调整学习率来保持训练稳定性。")
     parser.add_argument("--lr_scheduler", type=str, default="linear",
                         help="The scheduler type to use. Choose between 'linear', 'cosine', \
                             'cosine_with_restarts', 'polynomial', 'constant', 'constant_with_warmup'")
@@ -80,10 +82,15 @@ def get_parser():
     parser.add_argument("--adam_weight_decay", type=float, default=1e-2, help="Weight decay to use.")
     parser.add_argument("--adam_epsilon", type=float, default=1e-08, help="Epsilon value for the Adam optimizer")
     parser.add_argument("--max_grad_norm", default=1.0, type=float, help="Max gradient norm.")
-
+    """
+    1. no: 不使用混合精度，全部计算都以 32 位浮点数（fp32）进行。此模式最稳定，但效率相对较低。
+    2. fp16: 使用半精度浮点数（float16 precision，也称 fp16）进行计算。fp16 占用较少的内存，且可以加速训练，但需要硬件支持（如 Nvidia Volta、Ampere GPU）来处理精度可能导致的问题。
+    3. bf16: 使用 bfloat16（半精度浮点数的一种变体）。相比 fp16，bf16 保留更多的指数位，计算稳定性更高，同时具备类似的加速效果。bf16 需要 PyTorch 版本 >= 1.10，并且通常需要 Ampere GPU。
+    """
     parser.add_argument("--mixed_precision", type=str, default="no", choices=["no", "fp16", "bf16"],
                         help="Whether to use mixed precision. Choose between fp16 and bf16 (bfloat16). Bf16 requires \
-                            PyTorch >= 1.10. and an Nvidia Ampere GPU.")
+                            PyTorch >= 1.10. and an Nvidia Ampere GPU.\
+                            用于指定训练过程中使用的混合精度模式。混合精度训练可以加速深度学习模型的训练过程")
 
     # Sampling
     parser.add_argument("--algorithm_type", type=str, default="dpmsolver++", help="Algorithm for sampleing.")
@@ -98,6 +105,17 @@ def get_parser():
     parser.add_argument("--t_start", type=str, default=None, help="t_start of dpmsolver.")
     parser.add_argument("--t_end", type=str, default=None, help="t_end of dpmsolver.")
 
+    """
+    local_rank 参数在分布式训练中用于指定每个 GPU 或计算节点的标识。它的主要作用是在多 GPU 或分布式训练时，帮助框架区分每个设备的任务。
+    详细作用：
+    分布式训练：在大规模模型训练中，通常会使用多 GPU 或多机器来并行处理数据。local_rank 参数用于为每个 GPU 分配一个唯一的标识，以确保在多 GPU 环境下，任务和计算可以正确分配给每个设备。
+    通信同步：当进行梯度计算时，多个 GPU 需要彼此同步参数。local_rank 帮助每个节点知道自己在整个集群中的位置，从而正确参与数据的通信、计算和梯度同步。
+    默认值为 -1：这表示单 GPU 训练或未启用分布式模式。在这种情况下，local_rank 并不会实际起作用。
+    示例：
+    当使用 torch.distributed.launch 启动分布式训练时，local_rank 会被自动设置为每个进程对应的 GPU 号。
+    python -m torch.distributed.launch --nproc_per_node=4 train.py --local_rank=0
+    每个进程会接收不同的 local_rank 值（如 0, 1, 2, 3），确保任务正确分配到不同的 GPU。
+    """
     parser.add_argument("--local_rank", type=int, default=-1, help="For distributed training: local_rank")
 
     return parser
