@@ -12,11 +12,13 @@ class VGG16(nn.Module):
         self.enc_2 = nn.Sequential(*vgg16.features[5:10])
         self.enc_3 = nn.Sequential(*vgg16.features[10:17])
 
+        # 在初始化时，将这三个阶段的权重冻结，避免在训练过程中更新它们。
         for i in range(3):
             for param in getattr(self, f'enc_{i+1:d}').parameters():
                 param.requires_grad = False
 
     def forward(self, image):
+        # forward 方法接受图像，逐步经过这三个编码器，返回中间的特征图。这些特征图用于计算图像的感知损失。
         results = [image]
         for i in range(3):
             func = getattr(self, f'enc_{i+1:d}')
