@@ -100,7 +100,7 @@ if __name__ == '__main__':
     """
     conda activate fontdiffuser
     python dataset/font2image.py --font_in /mnt/data/llch/VQ-Font/z_using_files/content_font --image_out data_examples/basic
-    python dataset/font2image.py --font_in ../ttf --image_out ../ttf_pics
+    python dataset/font2image.py --font_in ./ttf --image_out ./ttf_pics
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("--font_in", default='../z_using_files/val_font/', help="font path")
