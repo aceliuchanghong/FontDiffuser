@@ -20,8 +20,8 @@ def run(opt):
 
     subprocess.run(["node", "potrace.js", f"outputs/{gen_output_path}/", f"svg_separate_{gen_output_path}/"])
     print(f"svg_separate路径:svg_separate_{gen_output_path}")
-    subprocess.run(["node", "run_pico.js", f"svg_separate_{gen_output_path}/", f"pico_{gen_output_path}/"])
-    print(f"pico路径:pico_{gen_output_path}/")
+    subprocess.run(["node", "run_pico.js", f"./svg_separate_{gen_output_path}", f"./pico_{gen_output_path}"])
+    print(f"pico路径:./pico_{gen_output_path}")
     subprocess.run(
         ["/usr/bin/python3", "to_ttf.py", "--input", f"pico_{gen_output_path}/", "--name",
          f"{opt.ttf_name}_adjust_before", "--v", f"{opt.version}"])
