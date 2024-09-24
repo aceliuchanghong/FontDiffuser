@@ -6,7 +6,9 @@ from .dpm_solver_pytorch import (NoiseScheduleVP,
                                 DPM_Solver)
 
 class FontDiffuserDPMPipeline():
-    """FontDiffuser pipeline with DPM_Solver scheduler.
+    """
+    FontDiffuser pipeline with DPM_Solver scheduler.
+    DPM_Solver：核心是用来解决噪声和模型预测之间的差分方程。它是该管道的关键组件，通过求解这个方程来生成高质量的图像
     """
     
     def __init__(

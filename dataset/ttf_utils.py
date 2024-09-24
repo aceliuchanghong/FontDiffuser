@@ -60,7 +60,9 @@ def render(font, char, size=(128, 128), pad=20):
 
 
 def font2image(input_file, output_paths, characters, size):
-    input_file_name = input_file.split('/')[-1].split('.')[0]
+    # input_file_name = input_file.split('\\')[-1].split('.')[0]
+    # 修改后的代码，兼容 Linux 和 Windows 系统
+    input_file_name = os.path.splitext(os.path.basename(input_file))[0]
     # print('mmL:', input_file_name)
     output_path = os.path.join(output_paths, input_file_name)
     # print(output_path)
