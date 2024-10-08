@@ -1,3 +1,4 @@
+// PNG ---> SVG
 const potrace = require("potrace");
 const fs = require("fs");
 const path = require("path");

@@ -1,5 +1,7 @@
 import shutil
 import os
+import cv2 
+import numpy as np
 
 
 def duplicate_image(image_path, output_path, nums):
@@ -34,9 +36,35 @@ def duplicate_image(image_path, output_path, nums):
         print(f"已创建: {new_file_path}")
 
 
+import os
+import pygame
+
+
+def fix_one_pic(font_name, chars='一'):
+    pygame.init()
+    pic_path = os.path.join('outputs', font_name)
+
+    for char in chars:
+        image_path = os.path.join(pic_path, char + '.png')
+        if os.path.exists(image_path):
+            print(image_path)
+            # 使图像居中, 覆盖原始文件
+            image = pygame.image.load(image_path)
+            image_rect = image.get_rect()
+            width, height = image_rect.size
+            centered_surface = pygame.Surface((width, height))
+            centered_surface.fill((255, 255, 255))  # 背景填充为白色
+            center_pos = centered_surface.get_rect().center
+            image_rect.center = center_pos  # 设置原图的rect居中
+            centered_surface.blit(image, image.get_rect(center=center_pos))
+            pygame.image.save(centered_surface, image_path)
+
+            print(f"fix {char}.png suc")
+    pygame.quit()
+
+
 if __name__ == '__main__':
     """
     python utils_2.py
     """
-    # 示例用法
-    print("00")
+    fix_one_pic('test')

@@ -82,7 +82,7 @@ def generate_font_pics(font_name_input, font_not_exists, wrong_character_input, 
     generated_images = []
     result = re.sub(r'[^\u4e00-\u9fff]', '', wrong_character_input)
     result = ''.join(sorted(set(result), key=result.index))
-    print(result)
+    print(result, sampling_step2, guidance_scale2)
     for char in result.strip():
         temp = {}
         source_image = args.ttf_pic_path + "/" + char + ".png"
@@ -110,6 +110,8 @@ def generate_font_pics(font_name_input, font_not_exists, wrong_character_input, 
         out_image.save(new_file_path)
         temp['render'] = False
         temp['path_pic'] = new_file_path
+        random_number = datetime.now().strftime("%H%M%S")
+        temp['current_time'] = random_number
         generated_images.append(temp)
 
     return generated_images, gr.update(value='字体图片如下,请逐一确认')
