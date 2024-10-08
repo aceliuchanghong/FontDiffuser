@@ -2,6 +2,7 @@ import random
 import shutil
 import time
 import os
+import re
 from datetime import datetime
 import gradio as gr
 from font_easy_ui import run_fontdiffuer, example_list
@@ -74,11 +75,15 @@ def generate_font(upload_pic_style, font_name, font_version, test_font):
 
 def generate_font_pics(font_name_input, font_not_exists, wrong_character_input, sampling_step2, guidance_scale2):
     if font_not_exists == '该名称字体不存在':
-        return [], gr.update(visible=True)
+        return [], gr.update(value='请先确认字体名称')
     style_pic_path_list = os.path.join('data_examples/test_style', font_name_input)
-    style_pic = os.path.join('data_examples/test_style', os.listdir(style_pic_path_list)[0])
+    style_pic = os.path.join(style_pic_path_list, os.listdir(style_pic_path_list)[0])
+    style_pic = Image.open(style_pic).convert('RGB')
     generated_images = []
-    for char in wrong_character_input.strip():
+    result = re.sub(r'[^\u4e00-\u9fff]', '', wrong_character_input)
+    result = ''.join(sorted(set(result), key=result.index))
+    print(result)
+    for char in result.strip():
         temp = {}
         source_image = args.ttf_pic_path + "/" + char + ".png"
         if not os.path.exists(source_image):
@@ -107,7 +112,7 @@ def generate_font_pics(font_name_input, font_not_exists, wrong_character_input, 
         temp['path_pic'] = new_file_path
         generated_images.append(temp)
 
-    return generated_images, gr.update(value='SUC')
+    return generated_images, gr.update(value='字体图片如下,请逐一确认')
 
 
 def get_most_idle_gpu():
@@ -138,17 +143,20 @@ def download_font(name):
     # 获取当前工作目录路径
     current_dir = os.getcwd()
     output_dir = os.path.join(current_dir, 'outputs', name)
+    # 构建字体文件路径
+    ttf_file = os.path.join(current_dir, f"{name}.ttf")
+    os.makedirs(output_dir, exist_ok=True)
     # 获取图片
     files = [f for f in os.listdir(output_dir) if f.endswith('.png')]
     if not files:
         print(f"No image files found in '{output_dir}'.")
+        if os.path.isfile(ttf_file):
+            return None, ttf_file
         return None, None
     # 随机选择一张图片
     random_pic = random.choice(files)
     random_pic_path = os.path.join(output_dir, random_pic)
     print(f"Random pic file '{random_pic_path}' selected.")
-    # 构建字体文件路径
-    ttf_file = os.path.join(current_dir, f"{name}.ttf")
 
     # 检查文件是否存在
     if os.path.isfile(ttf_file):
@@ -157,6 +165,30 @@ def download_font(name):
     else:
         print(f"Font file '{ttf_file}' not found.")
         return random_pic_path, None
+
+
+def re_gen_font(old_name, new_name):
+    # 如果没有输入old_name，则不会报错，直接返回初始值
+    if len(old_name) < 1:
+        return gr.update(value='请输入字体名称'), gr.update(visible=True), 'no_file.txt'
+
+    # 如果new_name为空，则使用old_name作为new_name
+    if len(new_name) < 1:
+        new_name = old_name
+
+    new_font_path = new_name + '.ttf'
+    old_font_pic_dir = os.path.join('outputs', old_name)
+
+    # 检查路径是否存在
+    if not os.path.isdir(old_font_pic_dir):
+        return gr.update(value='旧字体目录不存在'), gr.update(visible=True), new_font_path
+
+    subprocess.run(
+        ["python", "run_gen.py", "--input", f"{old_font_pic_dir}", "--name",
+         f"{new_name}", "--v", f"v1.1"])
+
+    print(f"生成字体路径: {old_font_pic_dir}, 新字体名称: {new_name}")
+    return gr.update(value='已生成,点击下载'), gr.update(value='已生成,点击下载', visible=False), new_font_path
 
 
 if __name__ == '__main__':
@@ -228,7 +260,7 @@ if __name__ == '__main__':
                         refreshing = gr.Button('📖刷新图片/字体-注意:\n名字需要填自己命名的字体名称(否则会报错)',
                                                variant='secondary')
                     download = gr.File(label='字体下载')
-        with gr.Tab(label='🔧字体文件修改'):
+        with gr.Tab(label='🔧字体样式修改'):
             tasks = gr.State([])
             with gr.Row():
                 with gr.Column() as column1:
@@ -245,16 +277,16 @@ if __name__ == '__main__':
                         if not os.path.exists(os.path.join('data_examples/test_style', font_name)):
                             return gr.update(value='再次确认字体名称'), gr.update(visible=True)
                         else:
-                            return gr.update(visible=False), gr.update(value='字体存在')
+                            return gr.update(visible=False), gr.update(value='字体存在', visible=True)
 
 
                     make_sure_font_name.click(sure_name, inputs=[font_name_input],
                                               outputs=[make_sure_font_name, font_not_exists])
                 with gr.Column() as column2:
-                    sampling_step2 = gr.Slider(20, 60, value=50, step=10, label="推理步数")
+                    sampling_step2 = gr.Slider(20, 60, value=40, step=5, label="推理步数")
                     guidance_scale2 = gr.Slider(1, 12, value=7.5, step=0.5, label="分类器引导指数", info="默认7.5")
                     re_gen = gr.Button('点击生成图片', variant='stop')
-                    re_gen_before_name_sure = gr.Textbox(value='请先确认字体名称', visible=False, interactive=False)
+                    re_gen_before_name_sure = gr.Textbox(value='', interactive=False)
 
 
             @gr.render(inputs=tasks)
@@ -269,7 +301,7 @@ if __name__ == '__main__':
 
                         def sure_ok_image(sure_images_path, font_name_input, task=task):
                             task['render'] = True
-                            shutil.move(sure_images_path, os.path.join('outputs', font_name_input))
+                            shutil.copy2(task['path_pic'], os.path.join('outputs', font_name_input))
                             return task_list
 
                         sure_button.click(sure_ok_image, inputs=[sure_images, font_name_input], outputs=tasks)
@@ -282,6 +314,20 @@ if __name__ == '__main__':
                                                      guidance_scale2,
                                                      ],
                          outputs=[tasks, re_gen_before_name_sure])
+        with gr.Tab(label='🛠️字体再生成'):
+            with gr.Column():
+                with gr.Row():
+                    old_name = gr.Textbox(label='旧字体名称', placeholder='请输入需要重新生成的旧字体名称')
+                    new_name = gr.Textbox(label='新字体名称',
+                                          placeholder='请输入需要重新生成的新字体名称,如果为空.则默认旧名称不变')
+                    alert = gr.Textbox(interactive=False, visible=False, value='请再确认一下旧字体名称,其不存在')
+
+                gen_new_font_button = gr.Button('🎢重新生成,约5分钟', variant='secondary')
+                progress = gr.Textbox(interactive=False, value='')
+                download_button = gr.DownloadButton(label='🎁点击下载', variant='stop')
+
+            gen_new_font_button.click(fn=re_gen_font, inputs=[old_name, new_name],
+                                      outputs=[progress, alert, download_button])
 
 
         def dummy_function(image):
