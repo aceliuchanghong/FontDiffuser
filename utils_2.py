@@ -1,7 +1,6 @@
 import shutil
 import os
-import cv2 
-import numpy as np
+import pygame
 
 
 def duplicate_image(image_path, output_path, nums):
@@ -36,30 +35,52 @@ def duplicate_image(image_path, output_path, nums):
         print(f"已创建: {new_file_path}")
 
 
-import os
-import pygame
-
-
 def fix_one_pic(font_name, chars='一'):
     pygame.init()
     pic_path = os.path.join('outputs', font_name)
 
     for char in chars:
         image_path = os.path.join(pic_path, char + '.png')
+
         if os.path.exists(image_path):
-            print(image_path)
-            # 使图像居中, 覆盖原始文件
+            # 加载图片
             image = pygame.image.load(image_path)
             image_rect = image.get_rect()
             width, height = image_rect.size
-            centered_surface = pygame.Surface((width, height))
-            centered_surface.fill((255, 255, 255))  # 背景填充为白色
-            center_pos = centered_surface.get_rect().center
-            image_rect.center = center_pos  # 设置原图的rect居中
-            centered_surface.blit(image, image.get_rect(center=center_pos))
-            pygame.image.save(centered_surface, image_path)
+            print(f"Original image size: {width}x{height}")
 
-            print(f"fix {char}.png suc")
+            # 使用mask来获取非透明部分的边界
+            mask = pygame.mask.from_surface(image)
+            mask_outline = mask.outline()
+
+            if mask_outline:
+                min_x = 1
+                max_x = 95
+                min_y = 1
+                max_y = 80
+
+                # 计算文字的中心点
+                text_center_x = (min_x + max_x) // 2
+                text_center_y = (min_y + max_y) // 2
+                print(f"Text bounding box: left={min_x}, right={max_x}, top={min_y}, bottom={max_y}")
+                print(f"Text center: ({text_center_x}, {text_center_y})")
+
+                # 创建一个新的白色背景的Surface，并将文字居中
+                centered_surface = pygame.Surface((width, height))
+                centered_surface.fill((255, 255, 255))  # 背景填充为白色
+
+                # 计算新的位置，使文字居中
+                center_pos = centered_surface.get_rect().center
+                offset_x = center_pos[0] - text_center_x
+                offset_y = center_pos[1] - text_center_y
+                image_rect.topleft = (offset_x, offset_y)
+
+                # 将图片绘制到新surface上
+                centered_surface.blit(image, image_rect)
+                pygame.image.save(centered_surface, image_path)
+
+                print(f"fix {char}.png success")
+
     pygame.quit()
 
 

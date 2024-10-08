@@ -2,6 +2,8 @@ import subprocess
 import argparse
 import os
 
+from utils_2 import fix_one_pic
+
 
 def run(opt):
     input_style_path = opt.input_path
@@ -21,6 +23,8 @@ def run(opt):
         "--method=multistep"
     ])
     print(f"输出图片路径:outputs/{gen_output_path}/")
+
+    fix_one_pic(opt.ttf_name)
     # 目标路径
     if not os.path.exists('svg_separate/'):
         os.makedirs(f'svg_separate/')
