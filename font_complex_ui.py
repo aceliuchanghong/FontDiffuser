@@ -273,6 +273,13 @@ if __name__ == '__main__':
                         make_sure_font_name = gr.Button('确认字体名称', variant='stop')
                         font_not_exists = gr.Textbox(value='该名称字体不存在', visible=False, interactive=False)
                     wrong_character_input = gr.Textbox(label='不满意文字', placeholder='输入需要修改的文字')
+                    with gr.Row():
+                        upload_wrong_char_img = gr.File(
+                            label='手动修改文字上传(尺寸严格96*96,仅上传"道.png"格式文字图片,可多图)',
+                            file_count='multiple',
+                            file_types=['.png'])
+                        upload_button = gr.Button('点击确认上传')
+                    upload_wrong_char = gr.Textbox(value='上传完成', visible=False, interactive=False)
 
 
                     def sure_name(font_name):
@@ -284,6 +291,30 @@ if __name__ == '__main__':
                             return gr.update(visible=False), gr.update(value='字体存在', visible=True)
 
 
+                    def upload_wrong_func(image_list, font_name, font_exists):
+                        if font_exists != '字体存在':
+                            return gr.update(value='该名称字体不存在,再次确认字体名称', visible=True)
+
+                        destination_path = os.path.join('outputs', font_name)
+                        if not os.path.exists(destination_path):
+                            return gr.update(value='该名称字体不存在,再次确认字体名称', visible=True)
+                        # print(image_list)
+                        for image in image_list:
+                            # print(os.path.basename(image))
+                            if not re.match(r'^[\u4e00-\u9fff]\.png$', os.path.basename(image)):
+                                return gr.update(value='图片格式有问题，文件名应为单个中文字符且以.png结尾',
+                                                 visible=True)
+                            img = Image.open(image)
+                            if img.size != (96, 96):
+                                return gr.update(value='图片尺寸不为96x96', visible=True)
+                            shutil.copy2(image, os.path.join(destination_path, os.path.basename(image)))
+
+                        return gr.update(visible=True)
+
+
+                    upload_button.click(upload_wrong_func,
+                                        inputs=[upload_wrong_char_img, font_name_input, font_not_exists],
+                                        outputs=[upload_wrong_char])
                     make_sure_font_name.click(sure_name, inputs=[font_name_input],
                                               outputs=[make_sure_font_name, font_not_exists])
                 with gr.Column() as column2:
