@@ -9,7 +9,7 @@ from font_easy_ui import run_fontdiffuer, example_list
 import uvicorn
 from fastapi import FastAPI
 import subprocess
-from utils_2 import duplicate_image
+from utils_2 import duplicate_image, fix_one_pic
 from dataset.font2image import process_fonts
 from PIL import Image
 from sample import (arg_parse,
@@ -107,6 +107,8 @@ def generate_font_pics(font_name_input, font_not_exists, wrong_character_input, 
         os.makedirs(output_dir, exist_ok=True)
         new_filename = f'{char}.png'
         new_file_path = os.path.join(output_dir, new_filename)
+        if char == '一':
+            fix_one_pic('QAQ', '一', output_dir)
         out_image.save(new_file_path)
         temp['render'] = False
         temp['path_pic'] = new_file_path

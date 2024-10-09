@@ -35,12 +35,14 @@ def duplicate_image(image_path, output_path, nums):
         print(f"已创建: {new_file_path}")
 
 
-def fix_one_pic(font_name, chars='一'):
+def fix_one_pic(font_name, chars='一', pic_path_new=None):
     pygame.init()
     pic_path = os.path.join('outputs', font_name)
 
     for char in chars:
         image_path = os.path.join(pic_path, char + '.png')
+        if pic_path_new is not None:
+            image_path = os.path.join(pic_path_new, char + '.png')
 
         if os.path.exists(image_path):
             # 加载图片
