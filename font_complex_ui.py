@@ -322,6 +322,8 @@ if __name__ == '__main__':
                     guidance_scale2 = gr.Slider(1, 12, value=7.5, step=0.5, label="分类器引导指数", info="默认7.5")
                     re_gen = gr.Button('点击生成图片', variant='stop')
                     re_gen_before_name_sure = gr.Textbox(value='', interactive=False)
+                    # 需要有一个一键复制的剩余的有问题的字的框
+                    # show_left_character_input = gr.Textbox(label='不满意文字剩余', interactive=False, value='', visible=False)
 
 
             @gr.render(inputs=tasks)
