@@ -5,6 +5,7 @@
 ```bash
 conda create -n fontdiffuser python=3.9 -y
 conda activate fontdiffuser
+source activate fontdiffuser
 ```
 
 **Step 2**: Install related version Pytorch following [here](https://pytorch.org/get-started/previous-versions/).
@@ -33,7 +34,7 @@ run_all.py
 run_gen.py
 ## 🏋️ Training
 ### Data Construction
-The training data files tree should be (The data examples are shown in directory `data_examples/train/`):
+The training data files tree should be ( The data examples are shown in directory `data_examples/train/`):
 ```
 
 ```
@@ -44,7 +45,7 @@ The training data files tree should be (The data examples are shown in directory
 │       │   ├── char1.png
 │       │   ├── char2.png
 │       │   └── ...
-│       └── TargetImage.png
+│       └── TargetImage
 │           ├── style0
 │           │     ├──style0+char0.png
 │           │     ├──style0+char1.png
