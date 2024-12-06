@@ -3,9 +3,13 @@ phase_1_ckpt/
 outputs/
 run_sh/
 ckpt/
-data_examples/train/TargetImage/
+data_examples/train/TargetImage/*
 ckpt_new/
+ckpt_old/
+ckpt/
 ttf_pics/
+data_examples/train/ContentImage/*.png
+figures/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

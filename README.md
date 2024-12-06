@@ -79,7 +79,7 @@ Coming Soon ...
 ### Training - Phase 1
 
 ```bash
-sh scripts/train_phase_1.sh
+nohup sh scripts/train_phase_1.sh > outputs/train_phase_1.log 2>&1 &
 ```
 
 - `data_root`: The data root, as `./data_examples`
@@ -96,7 +96,7 @@ sh scripts/train_phase_1.sh
 
 ### Training - Phase 2
 
-After the phase 2 training, you should put the trained checkpoint files (`unet.pth`, `content_encoder.pth`,
+After the phase 1 training, you should put the trained checkpoint files (`unet.pth`, `content_encoder.pth`,
 and `style_encoder.pth`) to the directory `phase_1_ckpt`. During phase 2, these parameters will be resumed.
 
 ```bash

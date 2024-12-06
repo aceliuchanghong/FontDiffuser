@@ -16,17 +16,21 @@ from diffusers.optimization import get_scheduler
 from dataset.font_dataset import FontDataset
 from dataset.collate_fn import CollateFN
 from configs.fontdiffuser import get_parser
-from src import (FontDiffuserModel,
-                 ContentPerceptualLoss,
-                 build_unet,
-                 build_style_encoder,
-                 build_content_encoder,
-                 build_ddpm_scheduler,
-                 build_scr)
-from utils import (save_args_to_yaml,
-                   x0_from_epsilon,
-                   reNormalize_img,
-                   normalize_mean_std)
+from src import (
+    FontDiffuserModel,
+    ContentPerceptualLoss,
+    build_unet,
+    build_style_encoder,
+    build_content_encoder,
+    build_ddpm_scheduler,
+    build_scr,
+)
+from utils import (
+    save_args_to_yaml,
+    x0_from_epsilon,
+    reNormalize_img,
+    normalize_mean_std,
+)
 
 logger = get_logger(__name__)
 
@@ -54,7 +58,8 @@ def main():
         gradient_accumulation_steps=args.gradient_accumulation_steps,
         mixed_precision=args.mixed_precision,
         log_with=args.report_to,
-        project_dir=logging_dir)
+        project_dir=logging_dir,
+    )
 
     if accelerator.is_main_process:
         os.makedirs(args.output_dir, exist_ok=True)
@@ -62,7 +67,8 @@ def main():
     logging.basicConfig(
         filename=f"{args.output_dir}/fontdiffuser_training.log",
         datefmt="%m/%d/%Y %H:%M:%S",
-        level=logging.INFO)
+        level=logging.INFO,
+    )
 
     # Ser training seed
     if args.seed is not None:
@@ -75,13 +81,15 @@ def main():
     noise_scheduler = build_ddpm_scheduler(args)
     if args.phase_2:
         unet.load_state_dict(torch.load(f"{args.phase_1_ckpt_dir}/unet.pth"))
-        style_encoder.load_state_dict(torch.load(f"{args.phase_1_ckpt_dir}/style_encoder.pth"))
-        content_encoder.load_state_dict(torch.load(f"{args.phase_1_ckpt_dir}/content_encoder.pth"))
+        style_encoder.load_state_dict(
+            torch.load(f"{args.phase_1_ckpt_dir}/style_encoder.pth")
+        )
+        content_encoder.load_state_dict(
+            torch.load(f"{args.phase_1_ckpt_dir}/content_encoder.pth")
+        )
 
     model = FontDiffuserModel(
-        unet=unet,
-        style_encoder=style_encoder,
-        content_encoder=content_encoder
+        unet=unet, style_encoder=style_encoder, content_encoder=content_encoder
     )
 
     """
@@ -106,37 +114,56 @@ def main():
     Normalize: 使用均值 [0.5] 和标准差 [0.5] 对张量进行归一化，将像素值从 [0, 1] 转换为 [-1, 1] 的范围。
     """
     content_transforms = transforms.Compose(
-        [transforms.Resize(args.content_image_size,
-                           interpolation=transforms.InterpolationMode.BILINEAR),
-         transforms.ToTensor(),
-         transforms.Normalize([0.5], [0.5])])
+        [
+            transforms.Resize(
+                args.content_image_size,
+                interpolation=transforms.InterpolationMode.BILINEAR,
+            ),
+            transforms.ToTensor(),
+            transforms.Normalize([0.5], [0.5]),
+        ]
+    )
     style_transforms = transforms.Compose(
-        [transforms.Resize(args.style_image_size,
-                           interpolation=transforms.InterpolationMode.BILINEAR),
-         transforms.ToTensor(),
-         transforms.Normalize([0.5], [0.5])])
+        [
+            transforms.Resize(
+                args.style_image_size,
+                interpolation=transforms.InterpolationMode.BILINEAR,
+            ),
+            transforms.ToTensor(),
+            transforms.Normalize([0.5], [0.5]),
+        ]
+    )
     target_transforms = transforms.Compose(
-        [transforms.Resize((args.resolution, args.resolution),
-                           interpolation=transforms.InterpolationMode.BILINEAR),
-         transforms.ToTensor(),
-         transforms.Normalize([0.5], [0.5])])
+        [
+            transforms.Resize(
+                (args.resolution, args.resolution),
+                interpolation=transforms.InterpolationMode.BILINEAR,
+            ),
+            transforms.ToTensor(),
+            transforms.Normalize([0.5], [0.5]),
+        ]
+    )
 
     train_font_dataset = FontDataset(
         args=args,
-        phase='train',
-        transforms=[
-            content_transforms,
-            style_transforms,
-            target_transforms],
-        scr=args.phase_2)
+        phase="train",
+        transforms=[content_transforms, style_transforms, target_transforms],
+        scr=args.phase_2,
+    )
     train_dataloader = torch.utils.data.DataLoader(
-        train_font_dataset, shuffle=True, batch_size=args.train_batch_size, collate_fn=CollateFN()
+        train_font_dataset,
+        shuffle=True,
+        batch_size=args.train_batch_size,
+        collate_fn=CollateFN(),
     )
 
     # Build optimizer and learning rate
     if args.scale_lr:
         args.learning_rate = (
-                args.learning_rate * args.gradient_accumulation_steps * args.train_batch_size * accelerator.num_processes
+            args.learning_rate
+            * args.gradient_accumulation_steps
+            * args.train_batch_size
+            * accelerator.num_processes
         )
     optimizer = torch.optim.AdamW(
         model.parameters(),
@@ -144,7 +171,7 @@ def main():
         # beta1 和 beta2 是 Adam 优化器中的两个动量项，控制一阶和二阶动量。beta1 通常用于加速收敛，beta2 用于防止震荡。
         betas=(args.adam_beta1, args.adam_beta2),
         weight_decay=args.adam_weight_decay,
-        eps=args.adam_epsilon
+        eps=args.adam_epsilon,
     )
     # 学习率调度器 动态调整学习率，避免训练过程中过早或过晚收敛，从而提升模型性能。
     lr_scheduler = get_scheduler(
@@ -168,14 +195,21 @@ def main():
         # 在分布式训练中，通常会有多个进程同时运行来加速模型训练。其中，只有一个进程是“主进程”（main process）主要负责记录日志、保存模型等操作
         # 而其他进程则主要用于计算。
         accelerator.init_trackers(args.experience_name)
-        save_args_to_yaml(args=args, output_file=f"{args.output_dir}/{args.experience_name}_config.yaml")
+        save_args_to_yaml(
+            args=args,
+            output_file=f"{args.output_dir}/{args.experience_name}_config.yaml",
+        )
 
     # Only show the progress bar once on each machine.
-    progress_bar = tqdm(range(args.max_train_steps), disable=not accelerator.is_local_main_process)
+    progress_bar = tqdm(
+        range(args.max_train_steps), disable=not accelerator.is_local_main_process
+    )
     progress_bar.set_description("Steps")
 
     # Convert to the training epoch
-    num_update_steps_per_epoch = math.ceil(len(train_dataloader) / args.gradient_accumulation_steps)
+    num_update_steps_per_epoch = math.ceil(
+        len(train_dataloader) / args.gradient_accumulation_steps
+    )
     num_train_epochs = math.ceil(args.max_train_steps / num_update_steps_per_epoch)
 
     global_step = 0
@@ -193,12 +227,19 @@ def main():
                 noise = torch.randn_like(target_images)
                 bsz = target_images.shape[0]
                 # Sample a random timestep for each image
-                timesteps = torch.randint(0, noise_scheduler.num_train_timesteps, (bsz,), device=target_images.device)
+                timesteps = torch.randint(
+                    0,
+                    noise_scheduler.num_train_timesteps,
+                    (bsz,),
+                    device=target_images.device,
+                )
                 timesteps = timesteps.long()
 
                 # Add noise to the target_images according to the noise magnitude at each timestep
                 # (this is the forward diffusion process) 扩散模型的核心，给目标图像添加噪声。
-                noisy_target_images = noise_scheduler.add_noise(target_images, noise, timesteps)
+                noisy_target_images = noise_scheduler.add_noise(
+                    target_images, noise, timesteps
+                )
 
                 # Classifier-free training strategy 分类器自由训练策略
                 # 随机遮蔽风格和内容图像，用于实现分类器自由引导。
@@ -214,10 +255,12 @@ def main():
                     timesteps=timesteps,
                     style_images=style_images,
                     content_images=content_images,
-                    content_encoder_downsample_size=args.content_encoder_downsample_size
+                    content_encoder_downsample_size=args.content_encoder_downsample_size,
                 )
                 # 通过模型预测噪声，并计算与真实噪声之间的均方误差（MSE）
-                diff_loss = F.mse_loss(noise_pred.float(), noise.float(), reduction="mean")
+                diff_loss = F.mse_loss(
+                    noise_pred.float(), noise.float(), reduction="mean"
+                )
                 offset_loss = offset_out_sum / 2
 
                 # output processing for content perceptual loss
@@ -225,7 +268,7 @@ def main():
                     scheduler=noise_scheduler,
                     noise_pred=noise_pred,
                     x_t=noisy_target_images,
-                    timesteps=timesteps
+                    timesteps=timesteps,
                 )
                 pred_original_sample = reNormalize_img(pred_original_sample_norm)
                 norm_pred_ori = normalize_mean_std(pred_original_sample)
@@ -233,24 +276,33 @@ def main():
                 percep_loss = perceptual_loss.calculate_loss(
                     generated_images=norm_pred_ori,
                     target_images=norm_target_ori,
-                    device=target_images.device)
+                    device=target_images.device,
+                )
 
-                loss = diff_loss + \
-                       args.perceptual_coefficient * percep_loss + \
-                       args.offset_coefficient * offset_loss
+                loss = (
+                    diff_loss
+                    + args.perceptual_coefficient * percep_loss
+                    + args.offset_coefficient * offset_loss
+                )
 
                 if args.phase_2:
                     neg_images = samples["neg_images"]
                     # sc loss
-                    sample_style_embeddings, pos_style_embeddings, neg_style_embeddings = scr(
+                    (
+                        sample_style_embeddings,
+                        pos_style_embeddings,
+                        neg_style_embeddings,
+                    ) = scr(
                         pred_original_sample_norm,
                         target_images,
                         neg_images,
-                        nce_layers=args.nce_layers)
+                        nce_layers=args.nce_layers,
+                    )
                     sc_loss = scr.calculate_nce_loss(
                         sample_s=sample_style_embeddings,
                         pos_s=pos_style_embeddings,
-                        neg_s=neg_style_embeddings)
+                        neg_s=neg_style_embeddings,
+                    )
                     loss += args.sc_coefficient * sc_loss
 
                 # Gather the losses across all processes for logging (if we use distributed training).
@@ -276,18 +328,34 @@ def main():
                     if global_step % args.ckpt_interval == 0:
                         save_dir = f"{args.output_dir}/global_step_{global_step}"
                         os.makedirs(save_dir, exist_ok=True)
-                        torch.save(model.unet.state_dict(), f"{save_dir}/unet.pth")
-                        torch.save(model.style_encoder.state_dict(), f"{save_dir}/style_encoder.pth")
-                        torch.save(model.content_encoder.state_dict(), f"{save_dir}/content_encoder.pth")
+                        # 此处如果 accelerate config 设置的多卡,需要加 module
+                        torch.save(
+                            model.module.unet.state_dict(), f"{save_dir}/unet.pth"
+                        )
+                        torch.save(
+                            model.module.style_encoder.state_dict(),
+                            f"{save_dir}/style_encoder.pth",
+                        )
+                        torch.save(
+                            model.module.content_encoder.state_dict(),
+                            f"{save_dir}/content_encoder.pth",
+                        )
                         torch.save(model, f"{save_dir}/total_model.pth")
                         logging.info(
-                            f"[{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))}] Save the checkpoint on global step {global_step}")
-                        print("Save the checkpoint on global step {}".format(global_step))
+                            f"[{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))}] Save the checkpoint on global step {global_step}"
+                        )
+                        print(
+                            "Save the checkpoint on global step {}".format(global_step)
+                        )
 
-            logs = {"step_loss": loss.detach().item(), "lr": lr_scheduler.get_last_lr()[0]}
+            logs = {
+                "step_loss": loss.detach().item(),
+                "lr": lr_scheduler.get_last_lr()[0],
+            }
             if global_step % args.log_interval == 0:
                 logging.info(
-                    f"[{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))}] Global Step {global_step} => train_loss = {loss}")
+                    f"[{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))}] Global Step {global_step} => train_loss = {loss}"
+                )
             progress_bar.set_postfix(**logs)
 
             # Quit

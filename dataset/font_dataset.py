@@ -9,9 +9,14 @@ import torchvision.transforms as transforms
 
 def get_nonorm_transform(resolution):
     nonorm_transform = transforms.Compose(
-        [transforms.Resize((resolution, resolution),
-                           interpolation=transforms.InterpolationMode.BILINEAR),
-         transforms.ToTensor()])
+        [
+            transforms.Resize(
+                (resolution, resolution),
+                interpolation=transforms.InterpolationMode.BILINEAR,
+            ),
+            transforms.ToTensor(),
+        ]
+    )
     return nonorm_transform
 
 
@@ -32,14 +37,16 @@ class FontDataset(Dataset):
             self.num_neg = args.num_neg  # 负样本的数量
         self.get_path()  # 初始化数据路径
         self.transforms = transforms  # 图像变换（可能为None）
-        self.nonorm_transforms = get_nonorm_transform(args.resolution)  # 不进行归一化的图像变换
+        self.nonorm_transforms = get_nonorm_transform(
+            args.resolution
+        )  # 不进行归一化的图像变换
 
     def get_path(self):
         """
         该方法遍历目标图像文件夹，将所有图像路径存储在 target_images 列表中，同时按照字体风格将图像分类到 style_to_images 字典中。
         """
         self.target_images = []  # 存储所有目标图像的路径
-        # images with related style  
+        # images with related style
         self.style_to_images = {}  # 以风格为键，存储对应的目标图像路径
         target_image_dir = f"{self.root}/{self.phase}/TargetImage"
         for style in os.listdir(target_image_dir):
@@ -52,12 +59,12 @@ class FontDataset(Dataset):
 
     def __getitem__(self, index):
         target_image_path = self.target_images[index]
-        target_image_name = target_image_path.split('/')[-1]
-        style, content = target_image_name.split('.')[0].split('+')
+        target_image_name = target_image_path.split("/")[-1]
+        style, content = target_image_name.split(".")[0].split("+")
 
         # Read content image
-        content_image_path = f"{self.root}/{self.phase}/ContentImage/{content}.jpg"
-        content_image = Image.open(content_image_path).convert('RGB')
+        content_image_path = f"{self.root}/{self.phase}/ContentImage/{content}.png"
+        content_image = Image.open(content_image_path).convert("RGB")
 
         # Random sample used for style image
         images_related_style = self.style_to_images[style].copy()
@@ -83,7 +90,8 @@ class FontDataset(Dataset):
             "style_image": style_image,
             "target_image": target_image,
             "target_image_path": target_image_path,
-            "nonorm_target_image": nonorm_target_image}
+            "nonorm_target_image": nonorm_target_image,
+        }
 
         if self.scr:
             """
@@ -99,7 +107,7 @@ class FontDataset(Dataset):
                 choose_style = random.choice(style_list)
                 choose_index = style_list.index(choose_style)
                 style_list.pop(choose_index)
-                choose_neg_name = f"{self.root}/train/TargetImage/{choose_style}/{choose_style}+{content}.jpg"
+                choose_neg_name = f"{self.root}/train/TargetImage/{choose_style}/{choose_style}+{content}.png"
                 choose_neg_names.append(choose_neg_name)
 
             # Load neg_images
@@ -110,7 +118,9 @@ class FontDataset(Dataset):
                 if i == 0:
                     neg_images = neg_image[None, :, :, :]
                 else:
-                    neg_images = torch.cat([neg_images, neg_image[None, :, :, :]], dim=0)
+                    neg_images = torch.cat(
+                        [neg_images, neg_image[None, :, :, :]], dim=0
+                    )
             sample["neg_images"] = neg_images
 
         return sample
