@@ -9,6 +9,10 @@ ckpt_old/
 ckpt/
 ttf_pics/
 data_examples/train/ContentImage/*.png
+upload_pic_default_dir/
+data_examples/test/*.png
+phase_1_ckpt/
+
 figures/
 # Byte-compiled / optimized / DLL files
 __pycache__/

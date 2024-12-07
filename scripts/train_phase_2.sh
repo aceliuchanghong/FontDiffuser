@@ -8,7 +8,7 @@ accelerate launch train.py \
     --phase_1_ckpt_dir="phase_1_ckpt" \
     --scr_ckpt_path="ckpt/scr_210000.pth" \
     --sc_coefficient=0.01 \
-    --num_neg=16 \
+    --num_neg=4 \
     --resolution=96 \
     --style_image_size=96 \
     --content_image_size=96 \
@@ -16,11 +16,11 @@ accelerate launch train.py \
     --channel_attn=True \
     --content_start_channel=64 \
     --style_start_channel=64 \
-    --train_batch_size=16 \
+    --train_batch_size=32 \
     --perceptual_coefficient=0.01 \
     --offset_coefficient=0.5 \
-    --max_train_steps=30000 \
-    --ckpt_interval=5000 \
+    --max_train_steps=15000 \
+    --ckpt_interval=3000 \
     --gradient_accumulation_steps=1 \
     --log_interval=50 \
     --learning_rate=1e-5 \
@@ -28,4 +28,3 @@ accelerate launch train.py \
     --lr_warmup_steps=1000 \
     --drop_prob=0.1 \
     --mixed_precision="no"
-    

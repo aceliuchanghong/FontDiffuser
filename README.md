@@ -8,7 +8,7 @@ conda activate fontdiffuser
 source activate fontdiffuser
 ```
 
-**Step 2**: Install related version Pytorch following [here](https://pytorch.org/get-started/previous-versions/).
+**Step 2**: Install related version Pytorch following [here](https://pytorch.org/get-started/previous-versions/).(其他版本其实也可以)
 
 ```bash
 # Suggested
@@ -100,7 +100,7 @@ After the phase 1 training, you should put the trained checkpoint files (`unet.p
 and `style_encoder.pth`) to the directory `phase_1_ckpt`. During phase 2, these parameters will be resumed.
 
 ```bash
-sh scripts/train_phase_2.sh
+nohup sh scripts/train_phase_2.sh > outputs/train_phase_2.log 2>&1 &
 ```
 
 - `phase_2`: Tag to phase 2 training.

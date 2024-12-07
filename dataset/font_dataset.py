@@ -100,11 +100,15 @@ class FontDataset(Dataset):
             """
             # Get neg image from the different style of the same content
             style_list = list(self.style_to_images.keys())
+            # print(f"style_list1:{style_list}")
             style_index = style_list.index(style)
+            # print(f"style_index:{style_index}")
             style_list.pop(style_index)
+            # print(f"style_list2:{style_list}")
             choose_neg_names = []
             for i in range(self.num_neg):
                 choose_style = random.choice(style_list)
+                # print(f"choose_style {i} :{choose_style}")
                 choose_index = style_list.index(choose_style)
                 style_list.pop(choose_index)
                 choose_neg_name = f"{self.root}/train/TargetImage/{choose_style}/{choose_style}+{content}.png"
