@@ -8,7 +8,7 @@ conda activate fontdiffuser
 source activate fontdiffuser
 ```
 
-**Step 2**: Install related version Pytorch following [here](https://pytorch.org/get-started/previous-versions/).(其他版本其实也可以)
+**Step 2**: Install related version Pytorch following [here](https://pytorch.org/get-started/previous-versions/).(其他版本其实也可以,没必要一定)
 
 ```bash
 # Suggested
@@ -38,6 +38,11 @@ The training data files tree should be ( The data examples are shown in director
 ```
 
 ```
+gen:
+python ttf/font2image_new.py --base_path ttf/LXGWWenKaiGB-Light.ttf \
+        --out_path ttf_pics/LXGWWenKaiGB-Light/
+python ttf/image_rename_with_dir.py
+
 ├──data_examples
 │   └── train
 │       ├── ContentImage
@@ -148,12 +153,23 @@ sh script/sample_content_character.sh
 
 ## 📱 Run WebUI
 
-### (1) Sampling by FontDiffuser
+### Sampling by FontDiffuser
 
 ```bash
 python font_easy_ui.py
 python font_complex_ui.py
 ```
+
+### Prepare before start
+
+```
+data_examples/basic/test/ ==>测试字体图片的目录,2000字
+data_examples/basic/LXGWWenKaiGB-Light/ ==>全图片路径
+(python dataset/font2image_example.py --font_in ttf/LXGWWenKaiGB-Light.ttf \
+        --image_out data_examples/basic/ \
+        --char_file char7000.txt)
+```
+
 
 ```text
 给出新的代码,使得风格特征只需要提取一次,然后应用到所有的内容图像上,需要预先计算的风格潜在表示,同时也需要修改 FontDiffuserDPMPipeline 类

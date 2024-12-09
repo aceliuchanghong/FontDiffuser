@@ -12,7 +12,13 @@ data_examples/train/ContentImage/*.png
 upload_pic_default_dir/
 data_examples/test/*.png
 phase_1_ckpt/
+node_modules/
+data_examples/test_style/
+data_examples/basic/*
+svg_separat*
+pico_*
 
+*.ttf
 figures/
 # Byte-compiled / optimized / DLL files
 __pycache__/

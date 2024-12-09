@@ -61,6 +61,7 @@ def generate_font(upload_pic_style, font_name, font_version, test_font):
         if test_font
         else "data_examples/basic/LXGWWenKaiGB-Light/"
     )
+    os.makedirs(basic_path, exist_ok=True)
     command = [
         "nohup",
         "python",
