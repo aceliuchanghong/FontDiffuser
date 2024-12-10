@@ -38,6 +38,7 @@ if __name__ == "__main__":
     """
     conda activate fontdiffuser
     python ttf/font2image_new.py --base_path /mnt/data/llch/free-font/test
+    python ttf/font2image_new.py --base_path /mnt/data/llch/free-font/font/repeat/楷体风
     python ttf/font2image_new.py --base_path ttf/LXGWWenKaiGB-Light.ttf \
         --out_path ttf_pics/LXGWWenKaiGB-Light/
     """

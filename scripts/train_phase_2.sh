@@ -8,7 +8,7 @@ accelerate launch train.py \
     --phase_1_ckpt_dir="phase_1_ckpt" \
     --scr_ckpt_path="ckpt/scr_210000.pth" \
     --sc_coefficient=0.01 \
-    --num_neg=4 \
+    --num_neg=16 \
     --resolution=96 \
     --style_image_size=96 \
     --content_image_size=96 \
