@@ -5,7 +5,7 @@ import os
 import re
 from datetime import datetime
 import gradio as gr
-from font_easy_ui import run_fontdiffuer, example_list
+from font_easy_ui import run_fontdiffuer, example_list, example_list2
 import uvicorn
 from fastapi import FastAPI
 import subprocess
@@ -271,7 +271,7 @@ if __name__ == "__main__":
                         )
                         gr.Examples(
                             label=" 1️⃣:点击选择风格字体",
-                            examples=example_list,
+                            examples=example_list2,
                             inputs=reference_image,
                         )
                     with gr.Row():

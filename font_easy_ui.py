@@ -49,6 +49,39 @@ example_list = [
     "data_examples/just_show/HYZhuZiHeiMoFaW/潮.png",
 ]
 
+example_list2 = [
+    "data_examples/just_show/GenJyuuGothicL-Medium/GenJyuuGothicL-Medium+弁.png",
+    "data_examples/just_show/HYDongMeiRenW/HYDongMeiRenW+步.png",
+    "data_examples/just_show/HYZhuZiWanJuPaiDuiW/HYZhuZiWanJuPaiDuiW+良.png",
+    "data_examples/just_show/刻石/刻石+哩.png",
+    "data_examples/just_show/HYYongZiWuShiW/HYYongZiWuShiW+能.png",
+    "data_examples/just_show/华文行楷/华文行楷+册.png",
+    "data_examples/just_show/方正楷体简体/方正楷体简体+俺.png",
+    # "data_examples/just_show/GenJyuuGothicL-P-Normal/GenJyuuGothicL-P-Normal+乜.png",
+    "data_examples/just_show/微软雅黑/微软雅黑+宾.png",
+    "data_examples/just_show/文泉驿正黑/文泉驿正黑+玉.png",
+    "data_examples/just_show/OPPOSans-M/OPPOSans-M+明.png",
+    "data_examples/just_show/方正仿宋简体/方正仿宋简体+俯.png",
+    "data_examples/just_show/HYZiKuTangJingJieKaiTiW/HYZiKuTangJingJieKaiTiW+躁.png",
+    "data_examples/just_show/GenYoMinTW-Regular/GenYoMinTW-Regular+羑.png",
+    "data_examples/just_show/SourceHanSansCN-Regular/SourceHanSansCN-Regular+梗.png",
+    "data_examples/just_show/HYShuHunTiJ/HYShuHunTiJ+用.png",
+    "data_examples/just_show/华文楷体/华文楷体+绦.png",
+    "data_examples/just_show/SourceHanSerifCN-Regular/SourceHanSerifCN-Regular+添.png",
+    "data_examples/just_show/方正黑体简体/方正黑体简体+蔼.png",
+    "data_examples/just_show/GenWanMinTW-Regular/GenWanMinTW-Regular+溏.png",
+    "data_examples/just_show/华文琥珀/华文琥珀+读.png",
+    "data_examples/just_show/HYZiKuTangHuiDianKaiShuW/HYZiKuTangHuiDianKaiShuW+刈.png",
+    "data_examples/just_show/OPPOSans-R/OPPOSans-R+鼠.png",
+    "data_examples/just_show/华文细黑/华文细黑+轻.png",
+    "data_examples/just_show/江西拙楷/江西拙楷+末.png",
+    "data_examples/just_show/华文仿宋/华文仿宋+饔.png",
+    "data_examples/just_show/Alibaba-PuHuiTi-Regular/Alibaba-PuHuiTi-Regular+铲.png",
+    "data_examples/just_show/杨任东竹石体-Regular/杨任东竹石体-Regular+疸.png",
+    "data_examples/just_show/方正书宋简体/方正书宋简体+裕.png",
+    "data_examples/just_show/HYJinLingMeiSongW/HYJinLingMeiSongW+衄.png",
+]
+
 
 def run_fontdiffuer(
     character,
