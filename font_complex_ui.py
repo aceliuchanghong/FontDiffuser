@@ -48,7 +48,7 @@ def generate_font(upload_pic_style, font_name, font_version, test_font):
     result, _ = get_latest_png_within_3_hours(gen_path)
     if result:
         return gr.update(
-            value="字体已经在生成中,大约需要180分钟,请勿重复点击", visible=True
+            value="字体已经在生成中,大约需要80分钟,请勿重复点击", visible=True
         )
     duplicate_image(upload_pic_style[0], gen_path, 24)
     free_gpu = str(get_most_idle_gpu())
@@ -82,7 +82,7 @@ def generate_font(upload_pic_style, font_name, font_version, test_font):
 
     time.sleep(10)
 
-    return gr.update(value="开始字体生成！大约需要180分钟,请等待", visible=True)
+    return gr.update(value="开始字体生成！大约需要80分钟,请等待", visible=True)
 
 
 def generate_font_pics(
@@ -123,8 +123,8 @@ def generate_font_pics(
         os.makedirs(output_dir, exist_ok=True)
         new_filename = f"{char}.png"
         new_file_path = os.path.join(output_dir, new_filename)
-        if char == "一":
-            fix_one_pic("QAQ", "一", output_dir)
+        # if char == "一":
+        #     fix_one_pic("QAQ", "一", output_dir)
         out_image.save(new_file_path)
         temp["render"] = False
         temp["path_pic"] = new_file_path
